@@ -3,258 +3,247 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bolt Robot Preview — Vignan's Agentic AI Hackathon</title>
+  <title>Bolt Robot Preview — Visual Changes Test</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
-<body class="theme-light-blue">
+<body>
 
-  <!-- Background Tech Grid Canvas -->
-  <canvas id="techNetworkCanvas"></canvas>
-
-  <!-- Top Notice Banner -->
-  <div class="test-env-banner">
-    <div class="banner-inner">
-      <span class="badge-test">STANDALONE TEST PROJECT</span>
-      <span class="banner-text">Visual Preview & Assessment Only · Completely Isolated from Production Agent 26</span>
-      <span class="badge-status">Active Preview</span>
+  <!-- Floating Test Environment Bar -->
+  <div class="test-controls-bar">
+    <div class="test-controls-inner">
+      <div class="test-tag-group">
+        <span class="badge-test">TEST PREVIEW</span>
+        <span class="test-label">Isolated Visual Changes Only &bull; 100% Disconnected from Production</span>
+      </div>
+      <div class="test-actions">
+        <div class="toggle-mode-group">
+          <button class="mode-btn active" id="btnUpdatedMode">
+            <span class="check-icon">✓</span> Reference Size (Prominent &amp; Clean)
+          </button>
+          <button class="mode-btn" id="btnOriginalMode">
+            Before (Small &amp; With Lines)
+          </button>
+        </div>
+        <div class="size-fine-tune">
+          <label for="robotScaleAdjust">Robot Scale:</label>
+          <input type="range" id="robotScaleAdjust" min="100" max="150" value="118" step="1">
+          <span id="scaleLabel">Reference (118%)</span>
+        </div>
+      </div>
     </div>
   </div>
 
-  <div class="page-wrapper">
-    <!-- Header Section -->
-    <header class="preview-header">
-      <div class="institution-tag">
-        <span class="tag-sparkle">✦</span>
-        <span class="tag-text">VIGNAN'S</span>
-        <span class="tag-separator">•</span>
-        <span class="tag-category">AI RESEARCH & INNOVATION</span>
+  <div class="app-layout">
+    <!-- Header Section (Matching Exact Website Design) -->
+    <header class="app-header">
+      <div class="header-left">
+        <!-- Vignan's Logo Emblem & Text -->
+        <div class="vignan-branding">
+          <div class="vignan-crest-icon">
+            <svg viewBox="0 0 100 100" width="38" height="38">
+              <polygon points="50,4 92,26 92,74 50,96 8,74 8,26" fill="#1e3a8a" stroke="#2563eb" stroke-width="2"/>
+              <circle cx="50" cy="50" r="30" fill="none" stroke="#60a5fa" stroke-width="2"/>
+              <polygon points="50,22 75,65 25,65" fill="#f59e0b" opacity="0.9"/>
+              <circle cx="50" cy="50" r="8" fill="#ffffff"/>
+            </svg>
+          </div>
+          <div class="vignan-text-block">
+            <div class="vignan-title">VIGNAN'S</div>
+            <div class="vignan-sub">FOUNDATION FOR SCIENCE, TECHNOLOGY &amp; RESEARCH</div>
+            <div class="vignan-estd">(Deemed to be University) &bull; Estd. u/s 3 of UGC Act 1956</div>
+          </div>
+        </div>
       </div>
-      
-      <h1 class="hackathon-title">AGENTIC AI HACKATHON</h1>
-      
-      <div class="agent-designation">
-        <span class="designation-line"></span>
-        <h2 class="project-title">Conference Management Agent</h2>
-        <span class="designation-line"></span>
+
+      <div class="header-center">
+        <div class="cse-presents">CSE PRESENTS</div>
+        <h1 class="main-event-title">AGENTIC AI HACKATHON</h1>
+        <div class="sub-event-title">
+          <span class="bullet-dot">&bull;</span> Conference Management Agent
+        </div>
       </div>
-      <p class="preview-tagline">Visual Appearance & Proportions Evaluation for Character Mascot "Bolt"</p>
+
+      <div class="header-right">
+        <div class="accreditation-badges">
+          <span class="acc-badge">ABET</span>
+          <span class="acc-badge highlight-red">NAAC <strong>A+</strong></span>
+          <span class="acc-badge highlight-orange">NIRF <strong>70<sup>th</sup></strong></span>
+          <span class="acc-badge highlight-blue">NBA <strong>TIER-1</strong></span>
+        </div>
+        <button class="btn-integrations">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          Integrations
+        </button>
+      </div>
     </header>
 
-    <!-- Inspection Controls Bar -->
-    <div class="inspection-toolbar">
-      <div class="toolbar-group">
-        <span class="toolbar-label">VIEW MODE:</span>
-        <div class="btn-segmented">
-          <button class="seg-btn active" data-view="spotlight" id="viewSpotlightBtn">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
-            Focused Spotlight
-          </button>
-          <button class="seg-btn" data-view="cinematic" id="viewCinematicBtn">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-            Full Desk Scene
-          </button>
-          <button class="seg-btn" data-view="framed" id="viewFramedBtn">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-            Hero Card Frame
-          </button>
-        </div>
+    <!-- Active Persona / Role Bar -->
+    <div class="persona-role-bar">
+      <div class="persona-label">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        Active Persona / Role:
       </div>
-
-      <div class="toolbar-group">
-        <span class="toolbar-label">ROBOT SCALE:</span>
-        <div class="slider-wrapper">
-          <input type="range" id="scaleSlider" min="70" max="130" value="100" step="5">
-          <span id="scaleValue">100%</span>
-        </div>
-      </div>
-
-      <div class="toolbar-group">
-        <span class="toolbar-label">INTERACTION:</span>
-        <button class="action-btn" id="toggleGridBtn">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg>
-          Proportion Grid
-        </button>
-        <button class="action-btn active" id="toggleFloatBtn">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-          Idle Float
-        </button>
+      <div class="persona-pills">
+        <span class="role-pill active">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
+          Chair (Dr. Radhika)
+        </span>
+        <span class="role-pill">Organizer (Dr. Suresh)</span>
+        <span class="role-pill">Reviewer (Dr. Holloway)</span>
+        <span class="role-pill">Author (Prof. Elena)</span>
+        <span class="role-pill">Participant (Kiran)</span>
+        <span class="role-pill">Session Chair (Prof. Sofia)</span>
+        <span class="role-pill">Admin</span>
       </div>
     </div>
 
-    <!-- MAIN ROBOT SECTION: Premium Clean Card -->
-    <main class="main-robot-section">
-      <div class="robot-hero-card" id="robotHeroCard">
+    <!-- Navigation Tabs Bar -->
+    <nav class="nav-tabs-bar">
+      <button class="nav-tab active">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        Bolt Assistant <span class="tab-ai-badge">AI</span>
+      </button>
+      <button class="nav-tab">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Overview &amp; Setup
+      </button>
+      <button class="nav-tab">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>
+        Call for Papers
+      </button>
+      <button class="nav-tab">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Submissions <span class="tab-count-badge">5</span>
+      </button>
+      <button class="nav-tab">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+        Reviewer Matching <span class="tab-agent-badge">AGENT 17</span>
+      </button>
+      <button class="nav-tab">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        Reviews <span class="tab-count-badge">4</span>
+      </button>
+      <button class="nav-tab">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+        AI Decisions <span class="tab-count-badge">1</span>
+      </button>
+      <button class="nav-tab">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/></svg>
+        Registration
+      </button>
+    </nav>
+
+    <!-- Main Content Area: Two Column Layout -->
+    <main class="dashboard-content-grid">
+      
+      <!-- LEFT COLUMN: Robot Card & Agent 26 Information Card -->
+      <aside class="dashboard-left-col">
         
-        <!-- Card Atmospheric Tech Background -->
-        <div class="card-tech-bg">
-          <div class="tech-glow-circle primary"></div>
-          <div class="tech-glow-circle secondary"></div>
-          <div class="tech-circuit-lines"></div>
-          <div class="tech-grid-overlay"></div>
-        </div>
-
-        <!-- Proportion Alignment Grid (Toggleable for testing) -->
-        <div class="proportion-grid-overlay" id="proportionGrid">
-          <div class="grid-line horizontal h1"><span>Head Center</span></div>
-          <div class="grid-line horizontal h2"><span>Eye Axis</span></div>
-          <div class="grid-line horizontal h3"><span>Neck / Collar</span></div>
-          <div class="grid-line horizontal h4"><span>Body Base</span></div>
-          <div class="grid-line vertical v-center"><span>Symmetry Axis</span></div>
-        </div>
-
-        <!-- Robot Showcase Stage -->
-        <div class="robot-showcase-stage" id="robotStage">
+        <!-- 1. ROBOT DISPLAY CARD (Subject to requested visual updates) -->
+        <div class="robot-display-card" id="robotDisplayCard">
           
-          <!-- Robot Display Frame -->
-          <div class="robot-frame-container" id="robotFrameContainer">
-            <!-- Ambient Blue Eye Ray Reflex -->
-            <div class="eye-glow-enhancement"></div>
-            
-            <!-- Reference Image Component -->
-            <div class="robot-image-wrapper" id="robotWrapper">
-              <img 
-                src="assets/bolt_robot_reference.jpg" 
-                alt="Bolt Robot Visual Reference" 
-                class="robot-reference-img"
-                id="robotImg"
-              />
-            </div>
+          <!-- Optional Decorative Network Lines (Only visible when toggled to 'Before' mode) -->
+          <svg class="network-connector-lines" id="connectorLinesSvg" viewBox="0 0 340 260">
+            <!-- Constellation dots & connector lines -->
+            <line x1="40" y1="60" x2="90" y2="110" stroke="rgba(147, 197, 253, 0.45)" stroke-width="1.2" stroke-dasharray="3,3"/>
+            <line x1="90" y1="110" x2="65" y2="180" stroke="rgba(147, 197, 253, 0.45)" stroke-width="1.2"/>
+            <line x1="280" y1="70" x2="250" y2="120" stroke="rgba(147, 197, 253, 0.45)" stroke-width="1.2" stroke-dasharray="3,3"/>
+            <line x1="250" y1="120" x2="300" y2="175" stroke="rgba(147, 197, 253, 0.45)" stroke-width="1.2"/>
+            <line x1="250" y1="120" x2="210" y2="140" stroke="rgba(147, 197, 253, 0.45)" stroke-width="1.2"/>
+            <circle cx="40" cy="60" r="3.5" fill="rgba(147, 197, 253, 0.7)"/>
+            <circle cx="90" cy="110" r="3" fill="rgba(147, 197, 253, 0.7)"/>
+            <circle cx="65" cy="180" r="3.5" fill="rgba(147, 197, 253, 0.7)"/>
+            <circle cx="280" cy="70" r="3.5" fill="rgba(147, 197, 253, 0.7)"/>
+            <circle cx="250" cy="120" r="4" fill="rgba(147, 197, 253, 0.85)"/>
+            <circle cx="300" cy="175" r="3.5" fill="rgba(147, 197, 253, 0.7)"/>
+            <circle cx="210" cy="140" r="3" fill="rgba(147, 197, 253, 0.7)"/>
+          </svg>
 
-            <!-- Soft Natural Contact Shadow -->
-            <div class="robot-contact-shadow" id="robotShadow"></div>
+          <!-- Robot Image Box (Slightly bigger per requirement #4) -->
+          <div class="robot-image-box" id="robotImageBox">
+            <!-- The Robot Image (Slightly bigger per requirement #3, centered, proportional) -->
+            <img 
+              src="assets/bolt_robot_reference.jpg" 
+              alt="Bolt Robot" 
+              class="robot-core-img"
+              id="robotCoreImg"
+            />
           </div>
 
+          <!-- Status Pill: 🟢 Bolt · Online & Listening (Unchanged) -->
+          <div class="robot-status-pill">
+            <span class="status-indicator-dot"></span>
+            <span class="status-title">Bolt</span>
+            <span class="status-sep">&bull;</span>
+            <span class="status-desc">Online &amp; Listening</span>
+          </div>
         </div>
 
-        <!-- Card Bottom Meta & Descriptions -->
-        <div class="robot-card-content">
-          <!-- Online Beacon Status -->
-          <div class="status-indicator-pill">
-            <span class="status-pulse-ring"></span>
-            <span class="status-dot"></span>
-            <span class="status-text"><strong>Bolt</strong> &middot; Online &amp; Listening</span>
-            <span class="audio-wave-anim">
-              <span></span><span></span><span></span><span></span>
-            </span>
+        <!-- 2. AGENT 26 INFORMATION CARD (Unchanged) -->
+        <div class="agent-info-card">
+          <div class="agent-card-header">
+            <span class="badge-agent-id">AGENT 26</span>
+            <h3 class="agent-card-title">Bolt &mdash; Autonomous Conference Agent</h3>
           </div>
-
-          <!-- Official Title Below Robot -->
-          <h3 class="bolt-title">Bolt &mdash; Autonomous Conference Management Agent</h3>
-
-          <!-- Short Description -->
-          <p class="bolt-description">
-            Bolt is an AI-powered Conference Management Assistant designed to manage the complete academic conference workflow.
+          
+          <p class="agent-card-paragraph">
+            Bolt coordinates the entire academic conference lifecycle from Call for Papers through submissions, peer review, AI decision support, registration payments, conflict-free scheduling, certificates, and proceedings.
           </p>
 
-          <!-- Key Conference Agent Capability Pills -->
-          <div class="capability-badges">
-            <span class="cap-badge">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-              Paper Submissions
-            </span>
-            <span class="cap-badge">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-              Peer Review Matching
-            </span>
-            <span class="cap-badge">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-              Session Scheduling
-            </span>
-            <span class="cap-badge">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 17H2a3 3 0 0 0 3-3V9a7 7 0 0 1 14 0v5a3 3 0 0 0 3 3zm-8.27 4a2 2 0 0 1-3.46 0"/></svg>
-              Author Notifications
-            </span>
-          </div>
-
-          <!-- Quick Test Interaction Buttons -->
-          <div class="interactive-prompt-bar">
-            <div class="prompt-input-fake">
-              <span class="prompt-icon">💬</span>
-              <span class="prompt-placeholder">"Bolt, summarize the review consensus for Paper #42..."</span>
+          <div class="agent-metadata-grid">
+            <div class="meta-row">
+              <span class="meta-key">Target Conference:</span>
+              <span class="meta-val highlight-code">AGENTIC-AI-2026</span>
             </div>
-            <button class="test-speak-btn" id="testGreetingBtn">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
-              Simulate Bolt Speech
-            </button>
-          </div>
-          <div class="speech-bubble" id="speechBubble">
-            "Hello! I am Bolt, your Academic Conference Assistant. Ready to organize papers, assign reviewers, and coordinate sessions!"
+            <div class="meta-row">
+              <span class="meta-key">Host Institution:</span>
+              <span class="meta-val">Vignan University</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-key">Reviewer Data:</span>
+              <span class="meta-val text-blue">Agent 17 Mock Provider</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-key">Payment Mode:</span>
+              <span class="meta-val text-green">Sandbox Verified</span>
+            </div>
           </div>
         </div>
-      </div>
+
+      </aside>
+
+      <!-- RIGHT COLUMN: Assistant Chat Interface -->
+      <section class="dashboard-right-col">
+        <div class="assistant-chat-panel">
+          
+          <div class="chat-message-container">
+            <div class="chat-message-header">
+              <span class="speaker-name">ASSISTANT (BOLT)</span>
+              <span class="message-timestamp">10:30 AM</span>
+            </div>
+            <div class="chat-speech-bubble">
+              <p>Hi, I'm Bolt, your Conference Management Assistant. I'm here to orchestrate AGENTIC-AI-2026 end-to-end, from Call for Papers through peer review, AI decision support, registration, conflict-free scheduling, certificates, and proceedings.</p>
+            </div>
+          </div>
+
+          <!-- Bottom Action Prompt Buttons -->
+          <div class="chat-action-buttons-row">
+            <button class="action-chip">Conference Status</button>
+            <button class="action-chip">Generate CFP</button>
+            <button class="action-chip">Review Submissions</button>
+            <button class="action-chip">Find Reviewers</button>
+            <button class="action-chip">Check COI</button>
+            <button class="action-chip">Manage Reviews</button>
+            <button class="action-chip">Build Programme</button>
+          </div>
+
+        </div>
+      </section>
+
     </main>
-
-    <!-- Visual Assessment Criteria Evaluation Grid -->
-    <section class="assessment-section">
-      <div class="section-heading">
-        <h3>DESIGN &amp; PROPORTIONS VERIFICATION CHECKLIST</h3>
-        <p>Evaluating the robot style against academic conference assistant requirements</p>
-      </div>
-
-      <div class="criteria-grid">
-        <!-- Criteria 1 -->
-        <div class="crit-card">
-          <div class="crit-icon checked">✓</div>
-          <div class="crit-body">
-            <h4>Head &amp; Face Screen Geometry</h4>
-            <p>Curved ergonomic white helmet with a deep navy pill-shaped OLED visor. Friendly curved edges convey approachable AI intelligence.</p>
-            <span class="crit-tag">Clean 3D Form</span>
-          </div>
-        </div>
-
-        <!-- Criteria 2 -->
-        <div class="crit-card">
-          <div class="crit-icon checked">✓</div>
-          <div class="crit-body">
-            <h4>Cyan Glowing Eyes &amp; Expression</h4>
-            <p>Two bright blue vertical pill eyes deliver clear attentiveness without creepy human mimicry, perfect for high-tech conference software.</p>
-            <span class="crit-tag">High Contrast &amp; Glow</span>
-          </div>
-        </div>
-
-        <!-- Criteria 3 -->
-        <div class="crit-card">
-          <div class="crit-icon checked">✓</div>
-          <div class="crit-body">
-            <h4>Anatomy &amp; Arm Proportions</h4>
-            <p>Organic rounded pear torso with visible articulated arms. Right arm playfully resting near head creates an empathetic, helpful character.</p>
-            <span class="crit-tag">Balanced Proportions</span>
-          </div>
-        </div>
-
-        <!-- Criteria 4 -->
-        <div class="crit-card">
-          <div class="crit-icon checked">✓</div>
-          <div class="crit-body">
-            <h4>Website UI Compatibility</h4>
-            <p>The soft ceramic white materials, gentle ambient shadows, and cyan lighting harmonize naturally with light blue conference dashboards.</p>
-            <span class="crit-tag">Premium Look &amp; Feel</span>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Floating Mini-Avatar Preview Dock -->
-    <div class="floating-assistant-preview" id="floatingWidget">
-      <div class="floating-avatar-box">
-        <div class="floating-robot-crop">
-          <img src="assets/bolt_robot_reference.jpg" alt="Bolt Avatar">
-        </div>
-        <span class="avatar-online-dot"></span>
-      </div>
-      <div class="floating-msg">
-        <span class="floating-name">Bolt AI</span>
-        <span class="floating-sub">Conference Assistant Active</span>
-      </div>
-    </div>
-
-    <!-- Footer -->
-    <footer class="preview-footer">
-      <p>Vignan's Agentic AI Hackathon &bull; Conference Management Agent &bull; Standalone Visual Prototype</p>
-    </footer>
   </div>
 
   <script src="script.js"></script>
