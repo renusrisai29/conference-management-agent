@@ -74,7 +74,7 @@ export const Header: React.FC<HeaderProps> = ({
           </h1>
           <div className="text-xs sm:text-sm font-semibold text-blue-700 flex items-center justify-center gap-1.5 mt-0.5">
             <span className="inline-block w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
-            Conference Management Agent · Agent 26 (Group 4)
+            Conference Management Agent
           </div>
         </div>
 

@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bolt Robot Preview — Vignan's Agentic AI Hackathon</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="theme-light-blue">
+
+  <!-- Background Tech Grid Canvas -->
+  <canvas id="techNetworkCanvas"></canvas>
+
+  <!-- Top Notice Banner -->
+  <div class="test-env-banner">
+    <div class="banner-inner">
+      <span class="badge-test">STANDALONE TEST PROJECT</span>
+      <span class="banner-text">Visual Preview & Assessment Only · Completely Isolated from Production Agent 26</span>
+      <span class="badge-status">Active Preview</span>
+    </div>
+  </div>
+
+  <div class="page-wrapper">
+    <!-- Header Section -->
+    <header class="preview-header">
+      <div class="institution-tag">
+        <span class="tag-sparkle">✦</span>
+        <span class="tag-text">VIGNAN'S</span>
+        <span class="tag-separator">•</span>
+        <span class="tag-category">AI RESEARCH & INNOVATION</span>
+      </div>
+      
+      <h1 class="hackathon-title">AGENTIC AI HACKATHON</h1>
+      
+      <div class="agent-designation">
+        <span class="designation-line"></span>
+        <h2 class="project-title">Conference Management Agent</h2>
+        <span class="designation-line"></span>
+      </div>
+      <p class="preview-tagline">Visual Appearance & Proportions Evaluation for Character Mascot "Bolt"</p>
+    </header>
+
+    <!-- Inspection Controls Bar -->
+    <div class="inspection-toolbar">
+      <div class="toolbar-group">
+        <span class="toolbar-label">VIEW MODE:</span>
+        <div class="btn-segmented">
+          <button class="seg-btn active" data-view="spotlight" id="viewSpotlightBtn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
+            Focused Spotlight
+          </button>
+          <button class="seg-btn" data-view="cinematic" id="viewCinematicBtn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            Full Desk Scene
+          </button>
+          <button class="seg-btn" data-view="framed" id="viewFramedBtn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            Hero Card Frame
+          </button>
+        </div>
+      </div>
+
+      <div class="toolbar-group">
+        <span class="toolbar-label">ROBOT SCALE:</span>
+        <div class="slider-wrapper">
+          <input type="range" id="scaleSlider" min="70" max="130" value="100" step="5">
+          <span id="scaleValue">100%</span>
+        </div>
+      </div>
+
+      <div class="toolbar-group">
+        <span class="toolbar-label">INTERACTION:</span>
+        <button class="action-btn" id="toggleGridBtn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg>
+          Proportion Grid
+        </button>
+        <button class="action-btn active" id="toggleFloatBtn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          Idle Float
+        </button>
+      </div>
+    </div>
+
+    <!-- MAIN ROBOT SECTION: Premium Clean Card -->
+    <main class="main-robot-section">
+      <div class="robot-hero-card" id="robotHeroCard">
+        
+        <!-- Card Atmospheric Tech Background -->
+        <div class="card-tech-bg">
+          <div class="tech-glow-circle primary"></div>
+          <div class="tech-glow-circle secondary"></div>
+          <div class="tech-circuit-lines"></div>
+          <div class="tech-grid-overlay"></div>
+        </div>
+
+        <!-- Proportion Alignment Grid (Toggleable for testing) -->
+        <div class="proportion-grid-overlay" id="proportionGrid">
+          <div class="grid-line horizontal h1"><span>Head Center</span></div>
+          <div class="grid-line horizontal h2"><span>Eye Axis</span></div>
+          <div class="grid-line horizontal h3"><span>Neck / Collar</span></div>
+          <div class="grid-line horizontal h4"><span>Body Base</span></div>
+          <div class="grid-line vertical v-center"><span>Symmetry Axis</span></div>
+        </div>
+
+        <!-- Robot Showcase Stage -->
+        <div class="robot-showcase-stage" id="robotStage">
+          
+          <!-- Robot Display Frame -->
+          <div class="robot-frame-container" id="robotFrameContainer">
+            <!-- Ambient Blue Eye Ray Reflex -->
+            <div class="eye-glow-enhancement"></div>
+            
+            <!-- Reference Image Component -->
+            <div class="robot-image-wrapper" id="robotWrapper">
+              <img 
+                src="assets/bolt_robot_reference.jpg" 
+                alt="Bolt Robot Visual Reference" 
+                class="robot-reference-img"
+                id="robotImg"
+              />
+            </div>
+
+            <!-- Soft Natural Contact Shadow -->
+            <div class="robot-contact-shadow" id="robotShadow"></div>
+          </div>
+
+        </div>
+
+        <!-- Card Bottom Meta & Descriptions -->
+        <div class="robot-card-content">
+          <!-- Online Beacon Status -->
+          <div class="status-indicator-pill">
+            <span class="status-pulse-ring"></span>
+            <span class="status-dot"></span>
+            <span class="status-text"><strong>Bolt</strong> &middot; Online &amp; Listening</span>
+            <span class="audio-wave-anim">
+              <span></span><span></span><span></span><span></span>
+            </span>
+          </div>
+
+          <!-- Official Title Below Robot -->
+          <h3 class="bolt-title">Bolt &mdash; Autonomous Conference Management Agent</h3>
+
+          <!-- Short Description -->
+          <p class="bolt-description">
+            Bolt is an AI-powered Conference Management Assistant designed to manage the complete academic conference workflow.
+          </p>
+
+          <!-- Key Conference Agent Capability Pills -->
+          <div class="capability-badges">
+            <span class="cap-badge">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+              Paper Submissions
+            </span>
+            <span class="cap-badge">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              Peer Review Matching
+            </span>
+            <span class="cap-badge">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              Session Scheduling
+            </span>
+            <span class="cap-badge">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 17H2a3 3 0 0 0 3-3V9a7 7 0 0 1 14 0v5a3 3 0 0 0 3 3zm-8.27 4a2 2 0 0 1-3.46 0"/></svg>
+              Author Notifications
+            </span>
+          </div>
+
+          <!-- Quick Test Interaction Buttons -->
+          <div class="interactive-prompt-bar">
+            <div class="prompt-input-fake">
+              <span class="prompt-icon">💬</span>
+              <span class="prompt-placeholder">"Bolt, summarize the review consensus for Paper #42..."</span>
+            </div>
+            <button class="test-speak-btn" id="testGreetingBtn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+              Simulate Bolt Speech
+            </button>
+          </div>
+          <div class="speech-bubble" id="speechBubble">
+            "Hello! I am Bolt, your Academic Conference Assistant. Ready to organize papers, assign reviewers, and coordinate sessions!"
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Visual Assessment Criteria Evaluation Grid -->
+    <section class="assessment-section">
+      <div class="section-heading">
+        <h3>DESIGN &amp; PROPORTIONS VERIFICATION CHECKLIST</h3>
+        <p>Evaluating the robot style against academic conference assistant requirements</p>
+      </div>
+
+      <div class="criteria-grid">
+        <!-- Criteria 1 -->
+        <div class="crit-card">
+          <div class="crit-icon checked">✓</div>
+          <div class="crit-body">
+            <h4>Head &amp; Face Screen Geometry</h4>
+            <p>Curved ergonomic white helmet with a deep navy pill-shaped OLED visor. Friendly curved edges convey approachable AI intelligence.</p>
+            <span class="crit-tag">Clean 3D Form</span>
+          </div>
+        </div>
+
+        <!-- Criteria 2 -->
+        <div class="crit-card">
+          <div class="crit-icon checked">✓</div>
+          <div class="crit-body">
+            <h4>Cyan Glowing Eyes &amp; Expression</h4>
+            <p>Two bright blue vertical pill eyes deliver clear attentiveness without creepy human mimicry, perfect for high-tech conference software.</p>
+            <span class="crit-tag">High Contrast &amp; Glow</span>
+          </div>
+        </div>
+
+        <!-- Criteria 3 -->
+        <div class="crit-card">
+          <div class="crit-icon checked">✓</div>
+          <div class="crit-body">
+            <h4>Anatomy &amp; Arm Proportions</h4>
+            <p>Organic rounded pear torso with visible articulated arms. Right arm playfully resting near head creates an empathetic, helpful character.</p>
+            <span class="crit-tag">Balanced Proportions</span>
+          </div>
+        </div>
+
+        <!-- Criteria 4 -->
+        <div class="crit-card">
+          <div class="crit-icon checked">✓</div>
+          <div class="crit-body">
+            <h4>Website UI Compatibility</h4>
+            <p>The soft ceramic white materials, gentle ambient shadows, and cyan lighting harmonize naturally with light blue conference dashboards.</p>
+            <span class="crit-tag">Premium Look &amp; Feel</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Floating Mini-Avatar Preview Dock -->
+    <div class="floating-assistant-preview" id="floatingWidget">
+      <div class="floating-avatar-box">
+        <div class="floating-robot-crop">
+          <img src="assets/bolt_robot_reference.jpg" alt="Bolt Avatar">
+        </div>
+        <span class="avatar-online-dot"></span>
+      </div>
+      <div class="floating-msg">
+        <span class="floating-name">Bolt AI</span>
+        <span class="floating-sub">Conference Assistant Active</span>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="preview-footer">
+      <p>Vignan's Agentic AI Hackathon &bull; Conference Management Agent &bull; Standalone Visual Prototype</p>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

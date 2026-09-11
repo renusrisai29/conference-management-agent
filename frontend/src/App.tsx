@@ -319,7 +319,7 @@ export const App: React.FC = () => {
             <span className="font-extrabold text-[#E31B23]">VIGNAN'S</span>
             <span>Foundation for Science, Technology & Research</span>
             <span>·</span>
-            <span>Agentic AI Hackathon (Agent 26 · Group 4)</span>
+            <span>Agentic AI Hackathon</span>
           </div>
           <div className="flex items-center gap-4 text-[11px]">
             <span>Double-Blind Peer Review</span>
