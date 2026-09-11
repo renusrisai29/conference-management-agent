@@ -1,6 +1,7 @@
 import React from 'react';
 import { Role } from '../types';
 import { ShieldCheck, Cpu, UserCheck, Activity } from 'lucide-react';
+import vignanLogoImg from '../assets/vignan_logo.png';
 
 interface HeaderProps {
   currentRole: Role;
@@ -16,52 +17,16 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <header className="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-50">
       {/* Main Top Header Bar */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-2.5 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-2 flex flex-col md:flex-row items-center justify-between gap-4">
         
-        {/* Left: VIGNAN'S Institutional Branding Recreated */}
-        <div className="flex items-center gap-3 select-none">
-          {/* Shield Crest Icon */}
-          <div className="relative w-12 h-14 flex-shrink-0 flex items-center justify-center">
-            <svg viewBox="0 0 100 120" className="w-full h-full drop-shadow-sm">
-              {/* Outer Purple/Violet Shield */}
-              <path
-                d="M 10 10 L 90 10 L 90 70 C 90 100 50 115 50 115 C 50 115 10 100 10 70 Z"
-                fill="#FFFFFF"
-                stroke="#6B5B95"
-                strokeWidth="4"
-              />
-              <path
-                d="M 16 16 L 84 16 L 84 68 C 84 94 50 108 50 108 C 50 108 16 94 16 68 Z"
-                fill="#E8E5F2"
-              />
-              {/* Central Wheel & Spokes in Blue */}
-              <circle cx="50" cy="55" r="28" fill="#FFFFFF" stroke="#1E6091" strokeWidth="4" />
-              <line x1="50" y1="27" x2="50" y2="83" stroke="#1E6091" strokeWidth="5" />
-              <line x1="26" y1="41" x2="74" y2="69" stroke="#1E6091" strokeWidth="5" />
-              <line x1="26" y1="69" x2="74" y2="41" stroke="#1E6091" strokeWidth="5" />
-              <circle cx="50" cy="55" r="10" fill="#1E6091" />
-              {/* White Star in Center */}
-              <polygon
-                points="50,49 52,53 56,53 53,56 54,60 50,57 46,60 47,56 44,53 48,53"
-                fill="#FFFFFF"
-              />
-            </svg>
-          </div>
-
-          {/* Vignan Typography & UGC Banner */}
-          <div className="flex flex-col">
-            <div className="flex items-baseline gap-1">
-              <span className="font-extrabold text-2xl tracking-tight text-[#E31B23]">
-                VIGNAN'S
-              </span>
-            </div>
-            <span className="text-[9px] font-bold text-slate-800 tracking-wider uppercase leading-none">
-              Foundation for Science, Technology & Research
-            </span>
-            <div className="mt-1 bg-[#1E6091] text-white text-[8px] font-semibold px-2 py-0.5 rounded-sm tracking-tight text-center">
-              (Deemed to be University) · Estd. u/s 3 of UGC Act 1956
-            </div>
-          </div>
+        {/* Left: VIGNAN'S Institutional Logo Area (Matching Reference Image) */}
+        <div className="flex items-center select-none py-1">
+          <img
+            src={vignanLogoImg}
+            alt="VIGNAN'S Foundation for Science, Technology & Research"
+            className="h-12 sm:h-14 md:h-[54px] w-auto object-contain block"
+            style={{ imageRendering: '-webkit-optimize-contrast' }}
+          />
         </div>
 
         {/* Center: CSE PRESENTS & AGENTIC AI HACKATHON Title */}
