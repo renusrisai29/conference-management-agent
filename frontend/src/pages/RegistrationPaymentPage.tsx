@@ -597,8 +597,8 @@ export const RegistrationPaymentPage: React.FC<RegistrationPaymentPageProps> = (
 
       {/* RECONCILE PAYMENT MODAL */}
       {paymentToReconcile && (
-        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl space-y-4">
+        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full p-4 sm:p-6 shadow-xl space-y-4 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div className="flex items-center gap-2">
                 <CreditCard className="w-5 h-5 text-indigo-600" />
@@ -677,8 +677,8 @@ export const RegistrationPaymentPage: React.FC<RegistrationPaymentPageProps> = (
 
       {/* CHECKOUT MODAL (SANDBOX PAY) */}
       {selectedReg && checkoutOrder && (
-        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl space-y-4">
+        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full p-4 sm:p-6 shadow-xl space-y-4 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div className="flex items-center gap-2">
                 <CreditCard className="w-5 h-5 text-blue-600" />
@@ -773,8 +773,8 @@ export const RegistrationPaymentPage: React.FC<RegistrationPaymentPageProps> = (
 
       {/* NEW REGISTRATION MODAL WITH DYNAMIC EARLY-BIRD CALCULATOR */}
       {showRegisterModal && (
-        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl">
+        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full p-4 sm:p-6 shadow-xl max-h-[90vh] overflow-y-auto">
             <h3 className="text-base font-bold text-slate-900 mb-4 border-b border-slate-100 pb-3">
               Register Conference Delegate
             </h3>
@@ -892,8 +892,8 @@ export const RegistrationPaymentPage: React.FC<RegistrationPaymentPageProps> = (
 
       {/* RECEIPT VIEW MODAL */}
       {viewReceipt && (
-        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-sm w-full p-6 shadow-xl border border-slate-200 space-y-4 text-xs">
+        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">
+          <div className="bg-white rounded-2xl max-w-sm w-full p-4 sm:p-6 shadow-xl border border-slate-200 space-y-4 text-xs max-h-[90vh] overflow-y-auto">
             <div className="text-center pb-3 border-b border-slate-100">
               <Receipt className="w-8 h-8 text-emerald-600 mx-auto mb-1" />
               <h3 className="font-bold text-slate-900 text-sm">Official Payment Receipt</h3>

@@ -231,7 +231,7 @@ export const BoltChat: React.FC<BoltChatProps> = ({
         </form>
 
         {/* Footer info & voice toggle simulation */}
-        <div className="mt-2 flex items-center justify-between text-[11px] text-slate-500 px-1">
+        <div className="mt-2 flex flex-wrap items-center justify-between gap-1 text-[11px] text-slate-500 px-1">
           <div className="flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
             <span>Standby · Agent 26 Online</span>

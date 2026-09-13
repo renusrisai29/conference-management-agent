@@ -85,7 +85,7 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({ conference, currentR
   return (
     <div className="space-y-6">
       {/* Top Banner Card */}
-      <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+      <div className="bg-white rounded-2xl border border-slate-200 p-4 sm:p-6 shadow-sm">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-5">
           <div>
             <div className="flex items-center gap-2">
@@ -96,7 +96,7 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({ conference, currentR
                 <CheckCircle2 className="w-3 h-3" /> Status: {conference.status}
               </span>
             </div>
-            <h2 className="text-2xl font-extrabold text-slate-900 mt-2">{conference.name}</h2>
+            <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 mt-2">{conference.name}</h2>
             <p className="text-slate-600 text-sm mt-1">{conference.theme}</p>
           </div>
 
@@ -161,7 +161,7 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({ conference, currentR
 
       {/* Important Dates Timeline */}
       {conference.dates && (
-        <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+        <div className="bg-white rounded-2xl border border-slate-200 p-4 sm:p-6 shadow-sm">
           <h3 className="text-base font-bold text-slate-900 flex items-center gap-2 mb-4">
             <Calendar className="w-5 h-5 text-blue-600" />
             Author & Reviewer Deadlines
@@ -193,7 +193,7 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({ conference, currentR
       )}
 
       {/* Conference Tracks */}
-      <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+      <div className="bg-white rounded-2xl border border-slate-200 p-4 sm:p-6 shadow-sm">
         <h3 className="text-base font-bold text-slate-900 flex items-center gap-2 mb-4">
           <BookOpen className="w-5 h-5 text-blue-600" />
           Configured Academic Tracks
@@ -224,8 +224,8 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({ conference, currentR
 
       {/* Conference Configuration Modal */}
       {isEditing && (
-        <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-2xl border border-slate-200 max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">
+          <div className="bg-white rounded-2xl max-w-2xl w-full p-4 sm:p-6 shadow-2xl border border-slate-200 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
               <div>
                 <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">

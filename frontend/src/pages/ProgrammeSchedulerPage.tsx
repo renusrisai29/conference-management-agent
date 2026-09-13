@@ -162,7 +162,7 @@ export const ProgrammeSchedulerPage: React.FC<ProgrammeSchedulerPageProps> = ({
           <span className="font-semibold text-slate-300">Live Conference Clock (IST · Asia/Kolkata):</span>
           <span className="font-mono font-bold text-emerald-400 text-sm">{currentIstString}</span>
         </div>
-        <div className="flex items-center gap-3 text-[11px]">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-[11px]">
           <span className="flex items-center gap-1.5 bg-emerald-950/80 text-emerald-300 border border-emerald-700/60 px-2.5 py-1 rounded-lg">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
             <strong>{ongoingCount}</strong> Ongoing
@@ -285,8 +285,8 @@ export const ProgrammeSchedulerPage: React.FC<ProgrammeSchedulerPageProps> = ({
               }`}
             >
               {/* Top Bar: Room, Track, Status, and Time */}
-              <div className="flex items-start justify-between gap-2 border-b border-slate-100 pb-3">
-                <div className="space-y-1.5">
+              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 border-b border-slate-100 pb-3">
+                <div className="space-y-1.5 flex-1">
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="bg-blue-50 text-blue-800 font-semibold text-[11px] px-2.5 py-0.5 rounded-lg border border-blue-200">
                       {sess.track_name || 'General Track'}
@@ -316,8 +316,8 @@ export const ProgrammeSchedulerPage: React.FC<ProgrammeSchedulerPageProps> = ({
                   <h3 className="text-sm font-bold text-slate-900 leading-snug">{sess.title}</h3>
                 </div>
 
-                <div className="text-right text-xs shrink-0 pl-2">
-                  <div className="flex items-center justify-end gap-1 text-slate-900 font-bold font-mono">
+                <div className="text-left sm:text-right text-xs shrink-0 sm:pl-2">
+                  <div className="flex items-center sm:justify-end gap-1 text-slate-900 font-bold font-mono">
                     <Clock className="w-3.5 h-3.5 text-blue-600" /> {sess.start_time} - {sess.end_time} IST
                   </div>
                   <div className="text-slate-500 font-medium text-[11px] mt-0.5">
@@ -327,7 +327,7 @@ export const ProgrammeSchedulerPage: React.FC<ProgrammeSchedulerPageProps> = ({
               </div>
 
               {/* Room & Session Chair */}
-              <div className="grid grid-cols-2 gap-2 text-xs">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
                 <div className="p-2.5 bg-slate-50 rounded-xl border border-slate-100">
                   <div className="flex items-center gap-1.5 text-slate-500 font-medium text-[11px]">
                     <MapPin className="w-3.5 h-3.5 text-rose-600 shrink-0" /> Room / Venue

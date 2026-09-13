@@ -213,7 +213,7 @@ export const ReviewerMatchingPage: React.FC<ReviewerMatchingPageProps> = ({
                     {match.reviewer.department} · <strong>{match.reviewer.institution}</strong>
                   </div>
 
-                  <div className="flex items-center gap-4 text-xs text-slate-500 mt-2 font-mono">
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-500 mt-2 font-mono">
                     <span>Scopus: <strong>{match.reviewer.scopus_author_id}</strong></span>
                     <span>h-index: <strong>{match.reviewer.h_index}</strong></span>
                     <span>Citations: <strong>{match.reviewer.total_citations}</strong></span>

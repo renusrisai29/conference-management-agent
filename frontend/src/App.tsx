@@ -129,7 +129,7 @@ export const App: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans selection:bg-blue-600 selection:text-white">
+    <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans selection:bg-blue-600 selection:text-white max-w-full overflow-x-hidden">
       {/* 1. Header with exact Vignan branding and hackathon title */}
       <Header
         currentRole={currentRole}
@@ -138,7 +138,7 @@ export const App: React.FC = () => {
       />
 
       {/* Main Container */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 space-y-6">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6">
         
         {/* Navigation Tabs Bar */}
         <div className="bg-white rounded-2xl border border-slate-200 p-1.5 shadow-xs flex items-center gap-1 overflow-x-auto no-scrollbar">
@@ -149,17 +149,17 @@ export const App: React.FC = () => {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition ${
+                className={`flex items-center gap-2 px-3 sm:px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap shrink-0 transition ${
                   isActive
                     ? 'bg-blue-600 text-white shadow-sm'
                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                 }`}
               >
-                <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-slate-400'}`} />
+                <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-white' : 'text-slate-400'}`} />
                 <span>{tab.label}</span>
                 {tab.count !== undefined && (
                   <span
-                    className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full ${
+                    className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full shrink-0 ${
                       isActive ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-600'
                     }`}
                   >
@@ -168,7 +168,7 @@ export const App: React.FC = () => {
                 )}
                 {tab.badge && (
                   <span
-                    className={`text-[9px] font-bold px-1.5 py-0.2 rounded uppercase ${
+                    className={`text-[9px] font-bold px-1.5 py-0.2 rounded uppercase shrink-0 ${
                       isActive ? 'bg-amber-400 text-slate-900' : 'bg-blue-50 text-blue-700'
                     }`}
                   >
@@ -343,8 +343,8 @@ export const App: React.FC = () => {
 
         {/* 14. Integrations Health Status View */}
         {showIntegrationsModal && (
-          <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
-            <div className="bg-white rounded-3xl max-w-4xl w-full p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+          <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">
+            <div className="bg-white rounded-3xl max-w-4xl w-full p-4 sm:p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
               <IntegrationsPage onClose={() => setShowIntegrationsModal(false)} />
             </div>
           </div>
@@ -352,15 +352,15 @@ export const App: React.FC = () => {
       </main>
 
       {/* Footer */}
-      <footer className="bg-white border-t border-slate-200 py-6 mt-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
-          <div className="flex items-center gap-2">
+      <footer className="bg-white border-t border-slate-200 py-5 sm:py-6 mt-8 sm:mt-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 text-xs text-slate-500 text-center sm:text-left">
+          <div className="flex flex-wrap items-center justify-center sm:justify-start gap-1.5 sm:gap-2">
             <span className="font-extrabold text-[#E31B23]">VIGNAN'S</span>
             <span>Foundation for Science, Technology & Research</span>
             <span>·</span>
             <span>Agentic AI Hackathon</span>
           </div>
-          <div className="flex items-center gap-4 text-[11px]">
+          <div className="flex flex-wrap items-center justify-center sm:justify-end gap-2 sm:gap-4 text-[11px]">
             <span>Double-Blind Peer Review</span>
             <span>·</span>
             <span>Agent 17 Faculty Monitoring</span>

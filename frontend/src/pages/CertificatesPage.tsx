@@ -240,8 +240,8 @@ export const CertificatesPage: React.FC<CertificatesPageProps> = ({
 
       {/* Certificate Preview Modal */}
       {previewCert && (
-        <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-2xl w-full p-8 shadow-2xl border-4 border-[#0E2A47] relative">
+        <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">
+          <div className="bg-white rounded-3xl max-w-2xl w-full p-4 sm:p-8 shadow-2xl border-4 border-[#0E2A47] relative max-h-[90vh] overflow-y-auto">
             <button
               onClick={() => setPreviewCert(null)}
               className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 font-bold"
@@ -312,8 +312,8 @@ export const CertificatesPage: React.FC<CertificatesPageProps> = ({
 
       {/* Issue Modal */}
       {showIssueModal && (
-        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl space-y-4">
+        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full p-4 sm:p-6 shadow-xl space-y-4 max-h-[90vh] overflow-y-auto">
             <h3 className="text-base font-bold text-slate-900 border-b border-slate-100 pb-3">
               Issue Academic Certificate
             </h3>
