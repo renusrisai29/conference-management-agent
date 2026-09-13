@@ -237,7 +237,7 @@ export const ProceedingsPage: React.FC<ProceedingsPageProps> = ({
                 </div>
 
                 <a
-                  href={`/api/archive/${arch.id}/download`}
+                  href={api.getArchiveDownloadUrl(arch.id)}
                   download
                   className="flex items-center gap-1.5 bg-white hover:bg-slate-100 text-slate-700 text-xs font-semibold px-3.5 py-2 rounded-xl transition border border-slate-200 shadow-2xs whitespace-nowrap shrink-0"
                 >

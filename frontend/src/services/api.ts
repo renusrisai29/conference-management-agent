@@ -41,11 +41,8 @@ export const api = {
   // Conference & CFP
   getConference: (id: string = 'conf-aiai-2026') => fetchJson<Conference>(`/conferences/${id}`),
   updateConference: (id: string, data: Partial<Conference>, userRole: string = 'CHAIR') =>
-    fetchJson<{ success: boolean; conference: Conference }>(`/conferences/${id}`, {
+    fetchJson<{ success: boolean; conference: Conference }>(`/conferences/${id}?role=${encodeURIComponent(userRole)}`, {
       method: 'PATCH',
-      headers: {
-        'x-user-role': userRole
-      },
       body: JSON.stringify(data)
     }),
   getCfp: (id: string) =>
@@ -68,14 +65,15 @@ export const api = {
     fetchJson<any>(`/submissions/${id}/validate`, { method: 'POST' }),
   checkSimilarity: (id: string) =>
     fetchJson<any>(`/submissions/${id}/similarity`, { method: 'POST' }),
-  deleteSubmission: (id: string, userEmail?: string, userRole?: string) =>
-    fetchJson<{ success: boolean; message: string }>(`/submissions/${id}`, {
-      method: 'DELETE',
-      headers: {
-        ...(userEmail ? { 'x-user-email': userEmail } : {}),
-        ...(userRole ? { 'x-user-role': userRole } : {})
-      }
-    }),
+  deleteSubmission: (id: string, userEmail?: string, userRole?: string) => {
+    const params = new URLSearchParams();
+    if (userRole) params.append('role', userRole);
+    if (userEmail) params.append('email', userEmail);
+    const query = params.toString() ? `?${params.toString()}` : '';
+    return fetchJson<{ success: boolean; message: string }>(`/submissions/${id}${query}`, {
+      method: 'DELETE'
+    });
+  },
 
   // Reviewers & Matching
   getFacultyResearchers: (domain?: string) =>
@@ -205,11 +203,8 @@ export const api = {
   getPayments: () =>
     fetchJson<any[]>('/payments'),
   reconcilePayment: (payment_id: string, data?: { registration_id?: string; notes?: string }, userRole: string = 'CHAIR') =>
-    fetchJson<{ success: boolean; message: string; payment: any; registration: any }>(`/payments/${payment_id}/reconcile`, {
+    fetchJson<{ success: boolean; message: string; payment: any; registration: any }>(`/payments/${payment_id}/reconcile?role=${encodeURIComponent(userRole)}`, {
       method: 'POST',
-      headers: {
-        'x-user-role': userRole
-      },
       body: JSON.stringify(data || {})
     }),
   createPaymentOrder: (registration_id: string, amount: number) =>
@@ -267,9 +262,8 @@ export const api = {
   // Event Archives
   getEventArchives: () => fetchJson<EventArchiveRecord[]>('/archive'),
   createEventArchive: (data?: { archived_by?: string }, userRole: string = 'CHAIR') =>
-    fetchJson<{ success: boolean; archive: EventArchiveRecord }>('/archive/create', {
+    fetchJson<{ success: boolean; archive: EventArchiveRecord }>(`/archive/create?role=${encodeURIComponent(userRole)}`, {
       method: 'POST',
-      headers: { 'x-user-role': userRole },
       body: JSON.stringify(data || {})
     }),
 
@@ -317,41 +311,37 @@ export const api = {
       body: JSON.stringify({ email, password })
     }),
   getReviewerProfile: (email: string) =>
-    fetchJson<{ success: boolean; user: any }>(`/reviewer/profile?email=${encodeURIComponent(email)}`, {
-      headers: {
-        'x-user-role': 'REVIEWER',
-        'x-user-email': email
-      }
-    }),
+    fetchJson<{ success: boolean; user: any }>(`/reviewer/profile?email=${encodeURIComponent(email)}&role=REVIEWER`),
   getReviewerWorkspaceAssignments: (email: string) =>
     fetchJson<{
       success: boolean;
       reviewer: { name: string; institution: string; department: string; email: string };
       total_assigned: number;
       assignments: any[];
-    }>(`/reviewer/assignments?email=${encodeURIComponent(email)}`, {
-      headers: {
-        'x-user-role': 'REVIEWER',
-        'x-user-email': email
-      }
-    }),
+    }>(`/reviewer/assignments?email=${encodeURIComponent(email)}&role=REVIEWER`),
   submitReviewerWorkspaceReview: (assignmentId: string, data: any, email: string) =>
     fetchJson<{ success: boolean; message: string; status: string; review?: any; draft?: any }>(
-      `/reviewer/assignments/${assignmentId}/review`,
+      `/reviewer/assignments/${assignmentId}/review?role=REVIEWER&email=${encodeURIComponent(email)}`,
       {
         method: 'POST',
-        headers: {
-          'x-user-role': 'REVIEWER',
-          'x-user-email': email
-        },
         body: JSON.stringify(data)
       }
     ),
   reopenReviewerAssignment: (assignmentId: string, userRole: string = 'CHAIR') =>
-    fetchJson<{ success: boolean; message: string }>(`/reviewer/assignments/${assignmentId}/reopen`, {
-      method: 'POST',
-      headers: { 'x-user-role': userRole }
-    }),
+    fetchJson<{ success: boolean; message: string }>(
+      `/reviewer/assignments/${assignmentId}/reopen?role=${encodeURIComponent(userRole)}`,
+      {
+        method: 'POST'
+      }
+    ),
   getReviewerManuscriptUrl: (submissionId: string, email: string) =>
-    `${API_BASE}/reviewer/papers/${submissionId}/manuscript?email=${encodeURIComponent(email)}&role=REVIEWER`
+    `${API_BASE}/reviewer/papers/${encodeURIComponent(submissionId)}/manuscript?email=${encodeURIComponent(email)}&role=REVIEWER`,
+  getCertificatePdfUrl: (certNumber: string) =>
+    `${API_BASE}/certificates/${encodeURIComponent(certNumber)}/pdf`,
+  getSubmissionManuscriptUrl: (submissionId: string) =>
+    `${API_BASE}/submissions/${encodeURIComponent(submissionId)}/manuscript`,
+  getTemplateDownloadUrl: () =>
+    `${API_BASE}/submissions/template`,
+  getArchiveDownloadUrl: (archiveId: string) =>
+    `${API_BASE}/archive/${encodeURIComponent(archiveId)}/download`
 };

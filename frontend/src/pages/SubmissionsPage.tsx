@@ -104,7 +104,7 @@ export const SubmissionsPage: React.FC<SubmissionsPageProps> = ({
   // Download official IEEE conference manuscript template (PDF)
   const handleDownloadTemplate = async () => {
     try {
-      const res = await fetch('/api/submissions/template');
+      const res = await fetch(api.getTemplateDownloadUrl());
       if (res.ok) {
         const blob = await res.blob();
         const url = URL.createObjectURL(blob);
@@ -554,7 +554,7 @@ export const SubmissionsPage: React.FC<SubmissionsPageProps> = ({
                     <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
                       {/* Attached manuscript file badge */}
                       <a
-                        href={`/api/submissions/${sub.id}/manuscript`}
+                        href={api.getSubmissionManuscriptUrl(sub.id)}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-1 bg-blue-50 hover:bg-blue-100 text-blue-700 text-[10px] font-medium px-2 py-0.5 rounded border border-blue-100 transition cursor-pointer"
@@ -657,7 +657,7 @@ export const SubmissionsPage: React.FC<SubmissionsPageProps> = ({
 
                     {/* Open / Download Manuscript PDF */}
                     <a
-                      href={`/api/submissions/${sub.id}/manuscript`}
+                      href={api.getSubmissionManuscriptUrl(sub.id)}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="p-1.5 text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition inline-flex items-center"

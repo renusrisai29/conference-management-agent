@@ -222,7 +222,7 @@ export const CertificatesPage: React.FC<CertificatesPageProps> = ({
                       <Eye className="w-4 h-4 inline" />
                     </button>
                     <a
-                      href={`/api/certificates/${c.certificate_number}/pdf`}
+                      href={api.getCertificatePdfUrl(c.certificate_number)}
                       target="_blank"
                       rel="noreferrer"
                       className="inline-flex items-center gap-1 text-slate-600 hover:text-blue-600 text-xs p-1"
@@ -298,7 +298,7 @@ export const CertificatesPage: React.FC<CertificatesPageProps> = ({
 
             <div className="mt-4 flex justify-end gap-2">
               <a
-                href={`/api/certificates/${previewCert.certificate_number}/pdf`}
+                href={api.getCertificatePdfUrl(previewCert.certificate_number)}
                 target="_blank"
                 rel="noreferrer"
                 className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-4 py-2 rounded-xl transition flex items-center gap-1.5 shadow-sm"
