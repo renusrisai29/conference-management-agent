@@ -5,7 +5,20 @@ import {
   EventArchiveRecord, ConferenceFeedback, FeedbackSummary
 } from '../types';
 
-const API_BASE = '/api';
+// Dynamic API base URL: reads optional public Vite variable VITE_API_BASE_URL with /api fallback
+const rawEnvBase = (import.meta.env.VITE_API_BASE_URL as string | undefined)?.trim();
+export const API_BASE = (() => {
+  if (!rawEnvBase) {
+    return '/api';
+  }
+  // Strip trailing slashes
+  let normalized = rawEnvBase.replace(/\/+$/, '');
+  // Ensure the configured base URL includes /api
+  if (!normalized.endsWith('/api')) {
+    normalized = `${normalized}/api`;
+  }
+  return normalized;
+})();
 
 async function fetchJson<T>(url: string, options?: RequestInit): Promise<T> {
   const res = await fetch(`${API_BASE}${url}`, {
@@ -340,5 +353,5 @@ export const api = {
       headers: { 'x-user-role': userRole }
     }),
   getReviewerManuscriptUrl: (submissionId: string, email: string) =>
-    `/api/reviewer/papers/${submissionId}/manuscript?email=${encodeURIComponent(email)}&role=REVIEWER`
+    `${API_BASE}/reviewer/papers/${submissionId}/manuscript?email=${encodeURIComponent(email)}&role=REVIEWER`
 };
