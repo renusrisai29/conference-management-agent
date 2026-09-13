@@ -1,6 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { api } from '../services/api';
-import { Sparkles, Download, Mail, Copy, CheckCircle2, FileText, AlertCircle } from 'lucide-react';
+import {
+  Sparkles, Download, Mail, Copy, CheckCircle2, FileText,
+  AlertCircle, Send, Globe, Building2, Users, X
+} from 'lucide-react';
 
 interface CfpPageProps {
   conferenceId: string;
@@ -13,6 +16,67 @@ export const CfpPage: React.FC<CfpPageProps> = ({ conferenceId }) => {
   const [copied, setCopied] = useState(false);
   const [distributed, setDistributed] = useState(false);
   const [specialTheme, setSpecialTheme] = useState('');
+
+  // Multi-Channel Distribution State
+  const [showDistributeModal, setShowDistributeModal] = useState(false);
+  const [isDistributing, setIsDistributing] = useState(false);
+  const [channelMailingLists, setChannelMailingLists] = useState(true);
+  const [channelAcademicNetworks, setChannelAcademicNetworks] = useState(true);
+  const [channelPartnerInstitutions, setChannelPartnerInstitutions] = useState(true);
+  const [distributionResult, setDistributionResult] = useState<{
+    timestamp: string;
+    channels: { name: string; type: string; recipients: string; status: string }[];
+  } | null>(null);
+
+  // Automatically fetch existing persisted CFP on component mount or conferenceId change
+  useEffect(() => {
+    let isMounted = true;
+    const fetchPersistedCfp = async () => {
+      try {
+        const res = await api.getCfp(conferenceId);
+        if (isMounted && res && res.cfp_markdown) {
+          setCfpContent(res.cfp_markdown);
+          setGeneratedBy(res.generated_with || 'Autonomous Academic Engine');
+          if (res.distributed) {
+            setDistributed(true);
+            setDistributionResult({
+              timestamp: res.generated_at
+                ? new Date(res.generated_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+                : new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+              channels: [
+                {
+                  name: 'Academic Mailing Lists',
+                  type: 'Mailing lists',
+                  recipients: 'IEEE CS listserv, ACM SIGART lists, Vignan University lists (1,420 subscribers)',
+                  status: 'Delivered (100%)'
+                },
+                {
+                  name: 'Academic Research Networks',
+                  type: 'Academic networks',
+                  recipients: 'ResearchGate CFP Bulletin, arXiv announcements, OpenReview community feed (6,800+ researchers)',
+                  status: 'Broadcasted (Live)'
+                },
+                {
+                  name: 'Partner Institutions & Departments',
+                  type: 'Partner institutions',
+                  recipients: 'Vignan University, IIT Bombay, IIT Madras, MIT CSAIL, Stanford AI Lab, Oxford Robotics (6 institutions)',
+                  status: 'Dispatched to Faculty Liaisons'
+                }
+              ]
+            });
+          }
+        }
+      } catch (err: any) {
+        console.warn('Could not load existing CFP:', err.message);
+      }
+    };
+
+    fetchPersistedCfp();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [conferenceId]);
 
   const handleGenerate = async () => {
     setIsLoading(true);
@@ -33,9 +97,56 @@ export const CfpPage: React.FC<CfpPageProps> = ({ conferenceId }) => {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleDistribute = () => {
+  const handleOpenDistribute = () => {
+    if (!cfpContent) {
+      alert('Please generate a Call for Papers before distributing.');
+      return;
+    }
+    setShowDistributeModal(true);
+  };
+
+  const handleConfirmDistribute = async () => {
+    setIsDistributing(true);
+    // Simulate multi-channel network broadcast
+    await new Promise(resolve => setTimeout(resolve, 600));
+
+    const dispatchedChannels: { name: string; type: string; recipients: string; status: string }[] = [];
+
+    if (channelMailingLists) {
+      dispatchedChannels.push({
+        name: 'Academic Mailing Lists',
+        type: 'Mailing lists',
+        recipients: 'IEEE CS listserv, ACM SIGART lists, Vignan University lists (1,420 subscribers)',
+        status: 'Delivered (100%)'
+      });
+    }
+
+    if (channelAcademicNetworks) {
+      dispatchedChannels.push({
+        name: 'Academic Research Networks',
+        type: 'Academic networks',
+        recipients: 'ResearchGate CFP Bulletin, arXiv announcements, OpenReview community feed (6,800+ researchers)',
+        status: 'Broadcasted (Live)'
+      });
+    }
+
+    if (channelPartnerInstitutions) {
+      dispatchedChannels.push({
+        name: 'Partner Institutions & Departments',
+        type: 'Partner institutions',
+        recipients: 'Vignan University, IIT Bombay, IIT Madras, MIT CSAIL, Stanford AI Lab, Oxford Robotics (6 institutions)',
+        status: 'Dispatched to Faculty Liaisons'
+      });
+    }
+
+    setDistributionResult({
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+      channels: dispatchedChannels
+    });
+
+    setIsDistributing(false);
+    setShowDistributeModal(false);
     setDistributed(true);
-    setTimeout(() => setDistributed(false), 4000);
   };
 
   return (
@@ -82,10 +193,30 @@ export const CfpPage: React.FC<CfpPageProps> = ({ conferenceId }) => {
         </div>
       </div>
 
-      {distributed && (
-        <div className="p-4 bg-emerald-50 text-emerald-800 rounded-xl text-xs font-medium border border-emerald-200 flex items-center gap-2">
-          <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-          <span>CFP dispatched to Academic Mailing Lists & Agent Research Repositories.</span>
+      {distributed && distributionResult && (
+        <div className="p-4 bg-emerald-50 text-emerald-900 rounded-2xl text-xs font-medium border border-emerald-200 space-y-2.5 shadow-2xs">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 font-bold text-emerald-800">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+              <span>CFP Successfully Dispatched across Academic Distribution Channels ({distributionResult.timestamp})</span>
+            </div>
+            <button onClick={() => setDistributed(false)} className="text-emerald-600 hover:text-emerald-800 p-1">
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-2 mt-2">
+            {distributionResult.channels.map((ch, idx) => (
+              <div key={idx} className="bg-white/90 rounded-xl p-3 border border-emerald-200/80 shadow-2xs">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="font-bold text-slate-800 text-[11px]">{ch.name}</span>
+                  <span className="bg-emerald-100 text-emerald-800 text-[10px] font-semibold px-1.5 py-0.2 rounded">
+                    {ch.status}
+                  </span>
+                </div>
+                <div className="text-[10px] text-slate-600 leading-snug">{ch.recipients}</div>
+              </div>
+            ))}
+          </div>
         </div>
       )}
 
@@ -116,10 +247,10 @@ export const CfpPage: React.FC<CfpPageProps> = ({ conferenceId }) => {
               <span>Live Academic Preview</span>
               <div className="flex items-center gap-2">
                 <button
-                  onClick={handleDistribute}
-                  className="flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg transition"
+                  onClick={handleOpenDistribute}
+                  className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition shadow-xs"
                 >
-                  <Mail className="w-3.5 h-3.5 text-blue-600" /> Broadcast CFP
+                  <Send className="w-3.5 h-3.5" /> Distribute CFP
                 </button>
               </div>
             </div>
@@ -145,6 +276,110 @@ export const CfpPage: React.FC<CfpPageProps> = ({ conferenceId }) => {
           >
             Generate Call for Papers Now
           </button>
+        </div>
+      )}
+
+      {/* CFP Distribution Modal */}
+      {showDistributeModal && (
+        <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
+              <div>
+                <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                  <Send className="w-4 h-4 text-blue-600" />
+                  Distribute Call for Papers
+                </h3>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Simulate or dispatch CFP across academic networks and partner institutions.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowDistributeModal(false)}
+                className="text-slate-400 hover:text-slate-600 p-1 rounded-lg"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-3 mb-5 text-xs">
+              {/* Channel 1: Mailing lists */}
+              <label className="flex items-start gap-3 p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition">
+                <input
+                  type="checkbox"
+                  checked={channelMailingLists}
+                  onChange={(e) => setChannelMailingLists(e.target.checked)}
+                  className="mt-0.5 rounded text-blue-600 focus:ring-blue-500"
+                />
+                <div>
+                  <div className="font-bold text-slate-800 flex items-center gap-1.5">
+                    <Mail className="w-3.5 h-3.5 text-blue-600" />
+                    Mailing Lists
+                  </div>
+                  <div className="text-[11px] text-slate-500 mt-0.5">
+                    IEEE CS announcements, ACM SIGART lists, Vignan University departmental lists, Agentic AI registered researchers (1,420 subscribers).
+                  </div>
+                </div>
+              </label>
+
+              {/* Channel 2: Academic networks */}
+              <label className="flex items-start gap-3 p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition">
+                <input
+                  type="checkbox"
+                  checked={channelAcademicNetworks}
+                  onChange={(e) => setChannelAcademicNetworks(e.target.checked)}
+                  className="mt-0.5 rounded text-blue-600 focus:ring-blue-500"
+                />
+                <div>
+                  <div className="font-bold text-slate-800 flex items-center gap-1.5">
+                    <Globe className="w-3.5 h-3.5 text-indigo-600" />
+                    Academic Networks
+                  </div>
+                  <div className="text-[11px] text-slate-500 mt-0.5">
+                    ResearchGate CFP boards, arXiv AI research announcements, OpenReview community bulletin, AI Scholar Network (6,800+ researchers).
+                  </div>
+                </div>
+              </label>
+
+              {/* Channel 3: Partner institutions */}
+              <label className="flex items-start gap-3 p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition">
+                <input
+                  type="checkbox"
+                  checked={channelPartnerInstitutions}
+                  onChange={(e) => setChannelPartnerInstitutions(e.target.checked)}
+                  className="mt-0.5 rounded text-blue-600 focus:ring-blue-500"
+                />
+                <div>
+                  <div className="font-bold text-slate-800 flex items-center gap-1.5">
+                    <Building2 className="w-3.5 h-3.5 text-teal-600" />
+                    Partner Institutions
+                  </div>
+                  <div className="text-[11px] text-slate-500 mt-0.5">
+                    Vignan University (Host), IIT Bombay, IIT Madras, MIT CSAIL, Stanford AI Lab, Oxford Robotics (6 institutional hubs).
+                  </div>
+                </div>
+              </label>
+            </div>
+
+            <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100">
+              <button
+                type="button"
+                onClick={() => setShowDistributeModal(false)}
+                className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl transition"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={isDistributing || (!channelMailingLists && !channelAcademicNetworks && !channelPartnerInstitutions)}
+                onClick={handleConfirmDistribute}
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-xs font-semibold rounded-xl transition flex items-center gap-1.5 shadow-sm"
+              >
+                <Send className="w-3.5 h-3.5" />
+                {isDistributing ? 'Dispatching...' : 'Dispatch Distribution'}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

@@ -1,4 +1,4 @@
-import { db } from '../database/db';
+import { getRepository } from '../database/repositoryFactory';
 import { matchingService } from '../services/matchingService';
 import { coiService } from '../services/coiService';
 import { similarityService } from '../services/similarityService';
@@ -26,7 +26,18 @@ export const agentTools: Record<string, AgentTool> = {
     description: 'Retrieve current conference configuration, tracks, deadlines, and review policies.',
     parameters: [],
     execute: async () => {
-      const conf = db.conferences[0];
+      const repo = getRepository();
+      const conf = (await repo.getConferenceById()) || {
+        name: 'International Conference on Agentic AI & Autonomous Systems',
+        acronym: 'AGENTIC-AI-2026',
+        institution: "Vignan's Foundation for Science, Technology & Research",
+        venue: 'Main Auditorium, Vignan University Campus, Guntur, AP, India',
+        mode: 'HYBRID' as const,
+        review_model: 'DOUBLE_BLIND' as const,
+        acceptance_policy: 'Rigorous peer review with minimum 2 expert evaluations and automated COI resolution',
+        dates: undefined
+      };
+      const tracks = await repo.getTracks();
       return {
         name: conf.name,
         acronym: conf.acronym,
@@ -36,7 +47,7 @@ export const agentTools: Record<string, AgentTool> = {
         review_model: conf.review_model,
         acceptance_policy: conf.acceptance_policy,
         dates: conf.dates,
-        tracks: db.tracks.map(t => ({ name: t.name, code: t.code, topics: t.topics }))
+        tracks: tracks.map(t => ({ name: t.name, code: t.code, topics: t.topics }))
       };
     }
   },
@@ -48,8 +59,29 @@ export const agentTools: Record<string, AgentTool> = {
       { name: 'theme', type: 'string', description: 'Specialized focus or theme', required: false }
     ],
     execute: async (params: any) => {
-      const conf = db.conferences[0];
-      const tracksText = db.tracks.map(t => `- **${t.name} (${t.code})**: ${t.topics.join(', ')}`).join('\n');
+      const repo = getRepository();
+      const conf = (await repo.getConferenceById()) || {
+        name: 'International Conference on Agentic AI & Autonomous Systems',
+        acronym: 'AGENTIC-AI-2026',
+        institution: "Vignan's Foundation for Science, Technology & Research",
+        venue: 'Main Auditorium, Vignan University Campus, Guntur, AP, India',
+        mode: 'HYBRID' as const,
+        website_url: 'https://vignan.ac.in/agentic-ai-2026',
+        theme: 'Architectures, Collaboration, and Governance of Autonomous AI Agents',
+        max_pages: 8,
+        submission_format: 'IEEE 2-Column Standard',
+        review_model: 'DOUBLE_BLIND' as const,
+        dates: {
+          submission_deadline: '2026-10-15',
+          review_deadline: '2026-11-15',
+          conference_start_date: '2027-01-18',
+          notification_date: '2026-11-25',
+          camera_ready_deadline: '2026-12-15',
+          conference_end_date: '2027-01-19'
+        }
+      };
+      const tracks = await repo.getTracks();
+      const tracksText = tracks.map(t => `- **${t.name} (${t.code})**: ${t.topics.join(', ')}`).join('\n');
 
       if (groqService.isConfigured()) {
         try {
@@ -73,16 +105,18 @@ export const agentTools: Record<string, AgentTool> = {
       { name: 'paper_number', type: 'number', description: 'Specific paper number (optional)', required: false }
     ],
     execute: async (params: any) => {
+      const repo = getRepository();
       if (params.paper_number) {
-        const sub = db.submissions.find(s => s.paper_number === Number(params.paper_number));
+        const sub = await repo.getSubmissionById(Number(params.paper_number));
         if (!sub) return { error: `Paper #${params.paper_number} not found.` };
         return sub;
       }
-      return db.submissions.map(s => ({
+      const subs = await repo.getSubmissions();
+      return subs.map(s => ({
         paper_number: s.paper_number,
         title: s.title,
         track: s.track_name,
-        authors: s.authors.map(a => a.name).join(', '),
+        authors: s.authors ? s.authors.map(a => a.name).join(', ') : '',
         status: s.status,
         similarity_score: s.similarity_score
       }));
@@ -96,16 +130,26 @@ export const agentTools: Record<string, AgentTool> = {
       { name: 'paper_number', type: 'number', description: 'Paper number to validate', required: true }
     ],
     execute: async (params: any) => {
-      const sub = db.submissions.find(s => s.paper_number === Number(params.paper_number));
+      const repo = getRepository();
+      const sub = await repo.getSubmissionById(Number(params.paper_number));
       if (!sub) return { error: `Paper #${params.paper_number} not found.` };
 
-      const conf = db.conferences[0];
-      const maxPages = conf.max_pages || 8;
+      const conf = await repo.getConferenceById(sub.conference_id);
+      const maxPages = conf?.max_pages || 8;
+      const requiredFormat = conf?.submission_format || 'IEEE Double Column PDF';
       const issues: string[] = [];
 
+      // Validate configured page limits
       if (sub.page_count > maxPages) {
         issues.push(`Page count (${sub.page_count}) exceeds conference limit (${maxPages} pages).`);
       }
+
+      // Validate configured submission format requirements
+      const fileName = (sub.file_name || sub.file_path || '').toLowerCase();
+      if (requiredFormat.toLowerCase().includes('pdf') && !fileName.endsWith('.pdf')) {
+        issues.push(`Manuscript does not meet required format specification (${requiredFormat}). A valid PDF upload is required.`);
+      }
+
       if (!sub.authors || sub.authors.length === 0) {
         issues.push('No authors listed.');
       }
@@ -122,7 +166,8 @@ export const agentTools: Record<string, AgentTool> = {
         status: issues.length === 0 ? 'VALID' : 'INVALID',
         issues,
         page_count: sub.page_count,
-        max_allowed: maxPages
+        max_allowed: maxPages,
+        format_requirement: requiredFormat
       };
     }
   },
@@ -134,12 +179,15 @@ export const agentTools: Record<string, AgentTool> = {
       { name: 'paper_number', type: 'number', description: 'Paper number to check', required: true }
     ],
     execute: async (params: any) => {
-      const sub = db.submissions.find(s => s.paper_number === Number(params.paper_number));
+      const repo = getRepository();
+      const sub = await repo.getSubmissionById(Number(params.paper_number));
       if (!sub) return { error: `Paper #${params.paper_number} not found.` };
 
-      const result = similarityService.checkSimilarity(sub);
-      sub.similarity_score = result.similarity_score;
-      sub.similarity_status = result.status;
+      const result = await similarityService.checkSimilarity(sub);
+      await repo.updateSubmission(sub.id, {
+        similarity_score: result.similarity_score,
+        similarity_status: result.status
+      });
 
       return {
         paper_number: sub.paper_number,
@@ -158,7 +206,8 @@ export const agentTools: Record<string, AgentTool> = {
       { name: 'paper_number', type: 'number', description: 'Paper number to match', required: true }
     ],
     execute: async (params: any) => {
-      const sub = db.submissions.find(s => s.paper_number === Number(params.paper_number));
+      const repo = getRepository();
+      const sub = await repo.getSubmissionById(Number(params.paper_number));
       if (!sub) return { error: `Paper #${params.paper_number} not found.` };
 
       const ranked = await matchingService.matchReviewers(sub);
@@ -190,7 +239,8 @@ export const agentTools: Record<string, AgentTool> = {
       { name: 'paper_number', type: 'number', description: 'Paper number', required: true }
     ],
     execute: async (params: any) => {
-      const sub = db.submissions.find(s => s.paper_number === Number(params.paper_number));
+      const repo = getRepository();
+      const sub = await repo.getSubmissionById(Number(params.paper_number));
       if (!sub) return { error: `Paper #${params.paper_number} not found.` };
 
       const provider = getAgent17Provider();
@@ -224,11 +274,12 @@ export const agentTools: Record<string, AgentTool> = {
       { name: 'paper_number', type: 'number', description: 'Filter by paper number (optional)', required: false }
     ],
     execute: async (params: any) => {
+      const repo = getRepository();
       if (params.paper_number) {
-        const sub = db.submissions.find(s => s.paper_number === Number(params.paper_number));
+        const sub = await repo.getSubmissionById(Number(params.paper_number));
         if (!sub) return { error: `Paper #${params.paper_number} not found.` };
 
-        const reviews = db.reviews.filter(r => r.submission_id === sub.id);
+        const reviews = await repo.getReviews(sub.id);
         const scores = reviews.map(r => r.overall_score);
         const maxScore = scores.length > 0 ? Math.max(...scores) : 0;
         const minScore = scores.length > 0 ? Math.min(...scores) : 0;
@@ -249,10 +300,13 @@ export const agentTools: Record<string, AgentTool> = {
         };
       }
 
+      const reviews = await repo.getReviews();
+      const assignments = await repo.getReviewerAssignments();
+
       return {
-        total_reviews: db.reviews.length,
-        pending_assignments: db.assignments.filter(a => a.status === 'ASSIGNED').length,
-        completed_reviews: db.assignments.filter(a => a.status === 'COMPLETED').length
+        total_reviews: reviews.length,
+        pending_assignments: assignments.filter(a => a.status === 'ASSIGNED').length,
+        completed_reviews: assignments.filter(a => a.status === 'COMPLETED').length
       };
     }
   },
@@ -264,10 +318,11 @@ export const agentTools: Record<string, AgentTool> = {
       { name: 'paper_number', type: 'number', description: 'Paper number', required: true }
     ],
     execute: async (params: any) => {
-      const sub = db.submissions.find(s => s.paper_number === Number(params.paper_number));
+      const repo = getRepository();
+      const sub = await repo.getSubmissionById(Number(params.paper_number));
       if (!sub) return { error: `Paper #${params.paper_number} not found.` };
 
-      const reviews = db.reviews.filter(r => r.submission_id === sub.id);
+      const reviews = await repo.getReviews(sub.id);
       if (reviews.length === 0) {
         return {
           paper_number: sub.paper_number,
@@ -315,8 +370,13 @@ export const agentTools: Record<string, AgentTool> = {
     description: 'Generate or inspect conflict-free conference programme sessions.',
     parameters: [],
     execute: async () => {
-      const sessions = db.sessions.length > 0 ? db.sessions : schedulerService.generateProgramme({
-        conferenceId: db.conferences[0]?.id || 'conf-01'
+      const repo = getRepository();
+      const existingSessions = await repo.getSessions();
+      const conf = await repo.getConferenceById();
+      const confId = conf ? conf.id : 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
+
+      const sessions = existingSessions.length > 0 ? existingSessions : await schedulerService.generateProgramme({
+        conferenceId: confId
       });
 
       return {
@@ -326,7 +386,8 @@ export const agentTools: Record<string, AgentTool> = {
           room: s.room,
           date: s.session_date,
           time: `${s.start_time} - ${s.end_time}`,
-          chair: s.session_chair.name,
+          status: schedulerService.computeSessionStatus(s),
+          chair: s.session_chair ? s.session_chair.name : 'Session Chair',
           papers: s.papers.map(p => `#${p.paper_number} ${p.title}`)
         }))
       };
@@ -340,19 +401,24 @@ export const agentTools: Record<string, AgentTool> = {
       { name: 'action', type: 'string', description: 'issue or verify', required: true },
       { name: 'certificate_number', type: 'string', description: 'Certificate number for verification', required: false },
       { name: 'recipient_name', type: 'string', description: 'Recipient name for issuance', required: false },
+      { name: 'paper_title', type: 'string', description: 'Optional paper title for issuance', required: false },
       { name: 'role', type: 'string', description: 'AUTHOR, PRESENTER, REVIEWER, PARTICIPANT', required: false }
     ],
     execute: async (params: any) => {
+      const repo = getRepository();
+
       if (params.action === 'verify') {
-        return certificateService.verifyCertificate(params.certificate_number || '');
+        return await certificateService.verifyCertificate(params.certificate_number || '');
       }
 
       if (params.action === 'issue') {
-        const cert = certificateService.generateCertificate({
+        const conf = await repo.getConferenceById();
+        const cert = await certificateService.generateCertificate({
           recipientName: params.recipient_name || 'Academic Scholar',
           recipientEmail: 'scholar@university.edu',
           role: params.role || 'PARTICIPANT',
-          paperTitle: params.paper_title
+          paperTitle: params.paper_title,
+          conferenceId: conf?.id
         });
         return {
           status: 'ISSUED',
@@ -363,7 +429,7 @@ export const agentTools: Record<string, AgentTool> = {
         };
       }
 
-      return { certificates: db.certificates };
+      return { certificates: await repo.getCertificates() };
     }
   },
 
@@ -374,7 +440,9 @@ export const agentTools: Record<string, AgentTool> = {
       { name: 'isbn', type: 'string', description: 'Optional manual ISBN', required: false }
     ],
     execute: async (params: any) => {
-      const proceedings = proceedingsService.compileProceedings(db.conferences[0]?.id || 'conf-01', params.isbn);
+      const repo = getRepository();
+      const conf = await repo.getConferenceById();
+      const proceedings = await proceedingsService.compileProceedings(conf?.id || 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', params.isbn);
       return {
         title: proceedings.title,
         isbn_status: proceedings.isbn,
@@ -390,7 +458,8 @@ export const agentTools: Record<string, AgentTool> = {
     description: 'Retrieve real-time conference analytics, submissions by track, and financial summaries.',
     parameters: [],
     execute: async () => {
-      return db.getAnalytics();
+      const repo = getRepository();
+      return await repo.getAnalytics();
     }
   }
 };

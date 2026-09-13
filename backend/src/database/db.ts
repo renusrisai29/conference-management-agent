@@ -2,7 +2,8 @@ import { v4 as uuidv4 } from 'uuid';
 import {
   User, Conference, Track, Submission, ReviewerAssignment,
   Review, ReviewReminder, Decision, Registration, PaymentRecord,
-  SessionSchedule, CertificateRecord, ProceedingsRecord, ConferenceAnalytics
+  SessionSchedule, CertificateRecord, ProceedingsRecord, ConferenceAnalytics,
+  CameraReadySubmission
 } from '../types';
 
 export class ConferenceDatabase {
@@ -10,6 +11,7 @@ export class ConferenceDatabase {
   public conferences: Conference[] = [];
   public tracks: Track[] = [];
   public submissions: Submission[] = [];
+  public cameraReadySubmissions: CameraReadySubmission[] = [];
   public assignments: ReviewerAssignment[] = [];
   public reviews: Review[] = [];
   public reminders: ReviewReminder[] = [];
@@ -92,6 +94,188 @@ export class ConferenceDatabase {
         scopus_id: '57102938471',
         is_active: true,
         created_at: '2026-08-11T11:00:00Z'
+      },
+      {
+        id: 'u-rev-08',
+        email: 'vrao@iitm.ac.in',
+        full_name: 'Dr. Vikramaditya Rao',
+        institution: 'Indian Institute of Technology Madras',
+        department: 'Department of Cybersecurity & Cryptology',
+        designation: 'Associate Professor',
+        role: 'REVIEWER',
+        orcid_id: '0000-0001-7291-8841',
+        scopus_id: '57199481023',
+        is_active: true,
+        created_at: '2026-08-12T09:00:00Z'
+      },
+      {
+        id: 'u-rev-09',
+        email: 'loconnor@anu.edu.au',
+        full_name: 'Dr. Liam O’Connor',
+        institution: 'Australian National University',
+        department: 'School of Computing',
+        designation: 'Senior Lecturer',
+        role: 'REVIEWER',
+        orcid_id: '0000-0001-9283-4018',
+        scopus_id: '56391029482',
+        is_active: true,
+        created_at: '2026-08-12T10:00:00Z'
+      },
+      {
+        id: 'u-rev-10',
+        email: 'falmansoor@kaust.edu.sa',
+        full_name: 'Dr. Fatima Al-Mansoor',
+        institution: 'King Abdullah University of Science and Technology',
+        department: 'Applied Mathematics & Computational Science',
+        designation: 'Principal Scientist',
+        role: 'REVIEWER',
+        orcid_id: '0000-0003-9182-4019',
+        scopus_id: '57482910392',
+        is_active: true,
+        created_at: '2026-08-12T11:00:00Z'
+      },
+      {
+        id: '99999999-9999-9999-9999-999999999901',
+        email: 'athorne@vignan.ac.in',
+        full_name: 'Dr. Aris Thorne',
+        institution: "Vignan's Foundation for Science, Technology & Research",
+        department: 'Department of Computer Science & Engineering',
+        designation: 'Associate Professor',
+        role: 'REVIEWER',
+        orcid_id: '0000-0002-4910-3819',
+        scopus_id: '57193240112',
+        is_active: true,
+        created_at: '2026-08-12T12:00:00Z'
+      },
+      {
+        id: '99999999-9999-9999-9999-999999999904',
+        email: 'sato@mech.u-tokyo.ac.jp',
+        full_name: 'Dr. Kenji Sato',
+        institution: 'University of Tokyo',
+        department: 'Department of Mechano-Informatics',
+        designation: 'Associate Professor',
+        role: 'REVIEWER',
+        orcid_id: '0000-0002-8819-2041',
+        scopus_id: '56481920194',
+        is_active: true,
+        created_at: '2026-08-12T12:05:00Z'
+      },
+      {
+        id: '99999999-9999-9999-9999-999999999905',
+        email: 'ajoshi@vignan.ac.in',
+        full_name: 'Dr. Ananya Joshi',
+        institution: "Vignan's Foundation for Science, Technology & Research",
+        department: 'Department of Computer Science',
+        designation: 'Assistant Professor',
+        role: 'REVIEWER',
+        orcid_id: '0000-0003-8821-4902',
+        scopus_id: '57210948291',
+        is_active: true,
+        created_at: '2026-08-12T12:10:00Z'
+      },
+      {
+        id: '99999999-9999-9999-9999-999999999906',
+        email: 'lmeyer@tum.de',
+        full_name: 'Prof. Lucas Meyer',
+        institution: 'Technical University of Munich',
+        department: 'Department of Electrical & Computer Engineering',
+        designation: 'Professor',
+        role: 'REVIEWER',
+        orcid_id: '0000-0001-9283-7461',
+        scopus_id: '56102938471',
+        is_active: true,
+        created_at: '2026-08-12T12:15:00Z'
+      },
+      {
+        id: '99999999-9999-9999-9999-999999999907',
+        email: 'pvenkatesh@cmu.edu',
+        full_name: 'Dr. Priya Venkatesh',
+        institution: 'Carnegie Mellon University',
+        department: 'Department of Computer Science',
+        designation: 'Associate Professor',
+        role: 'REVIEWER',
+        orcid_id: '0000-0002-7104-9810',
+        scopus_id: '57291840192',
+        is_active: true,
+        created_at: '2026-08-12T12:20:00Z'
+      },
+      {
+        id: '99999999-9999-9999-9999-999999999910',
+        email: 'mrossi@polimi.it',
+        full_name: 'Dr. Mateo Rossi',
+        institution: 'Politecnico di Milano',
+        department: 'Dipartimento di Elettronica, Informazione e Bioingegneria',
+        designation: 'Assistant Professor',
+        role: 'REVIEWER',
+        orcid_id: '0000-0003-4918-2049',
+        scopus_id: '56291038491',
+        is_active: true,
+        created_at: '2026-08-12T12:25:00Z'
+      },
+      {
+        id: '99999999-9999-9999-9999-999999999912',
+        email: 'gsilva@usp.br',
+        full_name: 'Dr. Gabriel Silva',
+        institution: 'University of São Paulo',
+        department: 'Department of Computer Science',
+        designation: 'Assistant Professor',
+        role: 'REVIEWER',
+        orcid_id: '0000-0003-9182-3041',
+        scopus_id: '56391820491',
+        is_active: true,
+        created_at: '2026-08-12T12:30:00Z'
+      },
+      {
+        id: '99999999-9999-9999-9999-999999999913',
+        email: 'cdubost@sorbonne-universite.fr',
+        full_name: 'Dr. Claire Dubost',
+        institution: 'Sorbonne Université',
+        department: 'Département Informatique',
+        designation: 'Maitre de Conferences',
+        role: 'REVIEWER',
+        orcid_id: '0000-0002-8192-3019',
+        scopus_id: '57193849102',
+        is_active: true,
+        created_at: '2026-08-12T12:35:00Z'
+      },
+      {
+        id: '99999999-9999-9999-9999-999999999914',
+        email: 'wzhang@tsinghua.edu.cn',
+        full_name: 'Dr. Wei Zhang',
+        institution: 'Tsinghua University',
+        department: 'Department of Computer Science & Technology',
+        designation: 'Associate Professor',
+        role: 'REVIEWER',
+        orcid_id: '0000-0001-9182-4910',
+        scopus_id: '56491029381',
+        is_active: true,
+        created_at: '2026-08-12T12:40:00Z'
+      },
+      {
+        id: '99999999-9999-9999-9999-999999999915',
+        email: 'enesterova@uwaterloo.ca',
+        full_name: 'Dr. Elena Nesterova',
+        institution: 'University of Waterloo',
+        department: 'School of Computer Science',
+        designation: 'Associate Professor',
+        role: 'REVIEWER',
+        orcid_id: '0000-0002-3849-1029',
+        scopus_id: '57194810283',
+        is_active: true,
+        created_at: '2026-08-12T12:45:00Z'
+      },
+      {
+        id: '99999999-9999-9999-9999-999999999918',
+        email: 'talhassan@illinois.edu',
+        full_name: 'Dr. Tariq Al-Hassan',
+        institution: 'University of Illinois Urbana-Champaign',
+        department: 'Department of Electrical & Computer Engineering',
+        designation: 'Associate Professor',
+        role: 'REVIEWER',
+        orcid_id: '0000-0003-9182-1029',
+        scopus_id: '57281903912',
+        is_active: true,
+        created_at: '2026-08-12T12:50:00Z'
       },
       {
         id: 'u-part-06',
@@ -421,6 +605,28 @@ export class ConferenceDatabase {
         status: 'COMPLETED',
         due_date: '2026-11-10',
         assigned_at: '2026-08-29T10:00:00Z'
+      },
+      {
+        id: 'asgn-05',
+        submission_id: 'sub-104',
+        reviewer_id: 'FAC-A17-006',
+        reviewer_name: 'Dr. Chen Wei',
+        reviewer_institution: 'Tsinghua University',
+        match_score: 84.0,
+        status: 'ASSIGNED',
+        due_date: '2026-09-05',
+        assigned_at: '2026-08-20T10:00:00Z'
+      },
+      {
+        id: 'asgn-06',
+        submission_id: 'sub-102',
+        reviewer_id: 'FAC-A17-007',
+        reviewer_name: 'Prof. Amara Okafor',
+        reviewer_institution: 'University of Cape Town',
+        match_score: 87.5,
+        status: 'ASSIGNED',
+        due_date: '2026-11-10',
+        assigned_at: '2026-09-01T10:00:00Z'
       }
     ];
 
@@ -575,60 +781,213 @@ export class ConferenceDatabase {
         receipt_url: '/receipts/RCPT-901284.pdf',
         created_at: '2026-09-06T11:25:00Z',
         verified_at: '2026-09-06T11:25:02Z'
+      },
+      {
+        id: 'pay-03',
+        registration_id: 'reg-02',
+        order_id: 'ORDER-918231-103',
+        amount: 8000,
+        currency: 'INR',
+        payment_mode: 'SANDBOX',
+        status: 'PENDING',
+        created_at: '2026-09-08T14:10:00Z'
+      },
+      {
+        id: 'pay-04',
+        order_id: 'ORDER-924810-552',
+        amount: 5500,
+        currency: 'INR',
+        payment_mode: 'SANDBOX',
+        status: 'FAILED',
+        created_at: '2026-09-09T16:45:00Z'
+      },
+      {
+        id: 'pay-05',
+        order_id: 'ORDER-930192-998',
+        payment_id: 'PAY-SANDBOX-93019299',
+        amount: 4000,
+        currency: 'INR',
+        payment_mode: 'SANDBOX',
+        status: 'UNMATCHED',
+        created_at: '2026-09-10T10:30:00Z'
+      }
+    ];
+
+    this.cameraReadySubmissions = [
+      {
+        id: 'crs-01',
+        submission_id: 'sub-103',
+        file_url: '/uploads/papers/paper_103_camera_ready.pdf',
+        page_count: 8,
+        confirmed_metadata: true,
+        submitted_at: '2026-09-01T11:00:00Z'
       }
     ];
 
     // 9. Sessions & Programme
+    // 9. Sessions & Programme (Multi-date conflict-free schedule)
     this.sessions = [
       {
-        id: 'sess-01',
+        id: 'fb000001-0000-0000-0000-000000000001',
         conference_id: confId,
-        title: 'Session 1A: Autonomous Multi-Agent Architectures & Protocols',
-        track_id: 'trk-01',
+        title: 'Session 1: Autonomous Agents - Autonomous Swarms & Microgrid Coordination',
+        track_id: 'c1111111-1111-1111-1111-111111111111',
         track_name: 'Autonomous Agents & Multi-Agent Coordination',
         room: 'Main Auditorium (Hall A)',
-        session_date: '2027-01-18',
-        start_time: '10:00 AM',
-        end_time: '11:30 AM',
+        session_date: '2026-09-12',
+        start_time: '09:30:00',
+        end_time: '11:00:00',
         session_chair: {
-          id: 'u-chair-01',
+          id: '11111111-1111-1111-1111-111111111111',
           name: 'Dr. Radhika Sharma',
           institution: "Vignan's Foundation for Science, Technology & Research"
         },
         papers: [
           {
-            submission_id: 'sub-101',
+            submission_id: 'ea101101-0000-0000-0000-000000000101',
             paper_number: 101,
             title: 'Decentralized Swarm Coordination for Autonomous Microgrid Power Optimization',
             presenter_name: 'Prof. Elena Rostova',
-            start_time: '10:00 AM',
-            end_time: '10:25 AM'
+            start_time: '09:30:00',
+            end_time: '09:55:00'
           }
         ]
       },
       {
-        id: 'sess-02',
+        id: 'fb000001-0000-0000-0000-000000000002',
         conference_id: confId,
-        title: 'Session 2B: Trustworthy Agent Guardrails & Formal Verification',
-        track_id: 'trk-03',
-        track_name: 'Trustworthy AI, Alignment & Cybersecurity',
+        title: 'Session 2: Deep Learning - Chain-of-Thought Reasoning & Diagnostic Trees',
+        track_id: 'c2222222-2222-2222-2222-222222222222',
+        track_name: 'Deep Learning & Foundation Reasoning Models',
         room: 'Seminar Hall B (CSE Block)',
-        session_date: '2027-01-18',
-        start_time: '11:45 AM',
-        end_time: '01:15 PM',
+        session_date: '2026-09-12',
+        start_time: '11:30:00',
+        end_time: '13:00:00',
         session_chair: {
-          id: 'u-sess-07',
+          id: '77777777-7777-7777-7777-777777777777',
           name: 'Prof. Sofia Chen',
           institution: 'National University of Singapore'
         },
         papers: [
           {
-            submission_id: 'sub-103',
+            submission_id: 'ea102102-0000-0000-0000-000000000102',
+            paper_number: 102,
+            title: 'Verifiable Chain-of-Thought Reasoning in Multi-Agent Diagnostic Systems',
+            presenter_name: 'Alex Vance',
+            start_time: '11:30:00',
+            end_time: '11:55:00'
+          }
+        ]
+      },
+      {
+        id: 'fb000001-0000-0000-0000-000000000003',
+        conference_id: confId,
+        title: 'Session 3: Trustworthy AI, Alignment - Agent Sandboxing & Guardrails',
+        track_id: 'c3333333-3333-3333-3333-333333333333',
+        track_name: 'Trustworthy AI, Alignment & Cybersecurity',
+        room: 'Colloquium Room C (AI Research Center)',
+        session_date: '2026-09-15',
+        start_time: '09:30:00',
+        end_time: '11:00:00',
+        session_chair: {
+          id: '55555555-5555-5555-5555-555555555555',
+          name: 'Dr. Marcus Holloway',
+          institution: 'University of Oxford'
+        },
+        papers: [
+          {
+            submission_id: 'ea103103-0000-0000-0000-000000000103',
             paper_number: 103,
             title: 'Jailbreak Resistant Guardrails and Sandboxing for Autonomous Agent Tool Execution',
             presenter_name: 'Tanya Rao',
-            start_time: '11:45 AM',
-            end_time: '12:10 PM'
+            start_time: '09:30:00',
+            end_time: '09:55:00'
+          }
+        ]
+      },
+      {
+        id: 'fb000001-0000-0000-0000-000000000004',
+        conference_id: confId,
+        title: 'Session 4: Edge AI, Robotics - Quadruped SLAM & Physical Autonomous Systems',
+        track_id: 'c4444444-4444-4444-4444-444444444444',
+        track_name: 'Edge AI, Robotics & Physical Autonomous Systems',
+        room: 'Main Auditorium (Hall A)',
+        session_date: '2026-09-15',
+        start_time: '14:00:00',
+        end_time: '15:30:00',
+        session_chair: {
+          id: '99999999-9999-9999-9999-999999999993',
+          name: 'Dr. Fatima Al-Mansoor',
+          institution: 'King Abdullah University of Science and Technology'
+        },
+        papers: [
+          {
+            submission_id: 'ea104104-0000-0000-0000-000000000104',
+            paper_number: 104,
+            title: 'Real-Time Edge Visual SLAM for Autonomous Quadruped Robotic Inspection',
+            presenter_name: 'Rajesh Varma',
+            start_time: '14:00:00',
+            end_time: '14:25:00'
+          },
+          {
+            submission_id: '1967956f-b2df-4cfc-9e9d-5ec7689ba57f',
+            paper_number: 107,
+            title: 'agentic ai',
+            presenter_name: 'renusrisai',
+            start_time: '14:25:00',
+            end_time: '14:50:00'
+          }
+        ]
+      },
+      {
+        id: 'fb000001-0000-0000-0000-000000000005',
+        conference_id: confId,
+        title: 'Session 5: Deep Learning - Speculative Execution & Byzantine Consensus',
+        track_id: 'c2222222-2222-2222-2222-222222222222',
+        track_name: 'Deep Learning & Foundation Reasoning Models',
+        room: 'Seminar Hall B (CSE Block)',
+        session_date: '2026-09-16',
+        start_time: '09:30:00',
+        end_time: '11:00:00',
+        session_chair: {
+          id: '99999999-9999-9999-9999-999999999992',
+          name: "Dr. Liam O'Connor",
+          institution: 'Australian National University'
+        },
+        papers: [
+          {
+            submission_id: 'ea105105-0000-0000-0000-000000000105',
+            paper_number: 105,
+            title: 'Divergent Review Demonstration: Speculative Execution in High-Churn Byzantine Networks',
+            presenter_name: 'Gabriel Silva',
+            start_time: '09:30:00',
+            end_time: '09:55:00'
+          }
+        ]
+      },
+      {
+        id: 'fb000001-0000-0000-0000-000000000006',
+        conference_id: confId,
+        title: 'Session 6: Autonomous Agents - Multi-Agent Consensus & Collaboration Protocols',
+        track_id: 'c1111111-1111-1111-1111-111111111111',
+        track_name: 'Autonomous Agents & Multi-Agent Coordination',
+        room: 'Main Auditorium (Hall A)',
+        session_date: '2026-09-16',
+        start_time: '11:30:00',
+        end_time: '13:00:00',
+        session_chair: {
+          id: '99999999-9999-9999-9999-999999999901',
+          name: 'Dr. Aris Thorne',
+          institution: "Vignan's Foundation for Science, Technology & Research"
+        },
+        papers: [
+          {
+            submission_id: 'ea106106-0000-0000-0000-000000000106',
+            paper_number: 106,
+            title: 'Decentralized Consensus and Multi-Agent Collaboration',
+            presenter_name: 'Dr. Ananya Sharma',
+            start_time: '11:30:00',
+            end_time: '11:55:00'
           }
         ]
       }
@@ -660,6 +1019,180 @@ export class ConferenceDatabase {
         verification_hash: 'b1a2c3d4e5f678901234567890abcdef12345678',
         issue_date: '2027-01-20',
         verification_url: '/certificates/VIGNAN-CONF2026-CERT-88493/verify'
+      }
+    ];
+
+    // 10. Sessions (Conference Programme & Timetable)
+    this.sessions = [
+      {
+        id: 'fb000001-0000-0000-0000-000000000001',
+        conference_id: confId,
+        title: 'Session 1: Autonomous Agents - Autonomous Swarms & Microgrid Coordination',
+        track_id: 'c1111111-1111-1111-1111-111111111111',
+        track_name: 'Autonomous Agents & Multi-Agent Coordination',
+        room: 'Main Auditorium (Hall A)',
+        session_date: '2026-09-12',
+        start_time: '09:30:00',
+        end_time: '11:00:00',
+        status: 'COMPLETED',
+        session_chair: {
+          id: '11111111-1111-1111-1111-111111111111',
+          name: 'Dr. Radhika Sharma',
+          institution: "Vignan's Foundation for Science, Technology & Research"
+        },
+        papers: [
+          {
+            submission_id: 'sub-101',
+            paper_number: 101,
+            title: 'Decentralized Swarm Coordination for Autonomous Microgrid Power Optimization',
+            presenter_name: 'Prof. Elena Rostova',
+            start_time: '09:30:00',
+            end_time: '09:55:00'
+          }
+        ]
+      },
+      {
+        id: 'fb000001-0000-0000-0000-000000000002',
+        conference_id: confId,
+        title: 'Session 2: Deep Learning - Chain-of-Thought Reasoning & Diagnostic Trees',
+        track_id: 'c2222222-2222-2222-2222-222222222222',
+        track_name: 'Deep Learning & Foundation Reasoning Models',
+        room: 'Seminar Hall B (CSE Block)',
+        session_date: '2026-09-12',
+        start_time: '11:30:00',
+        end_time: '13:00:00',
+        status: 'COMPLETED',
+        session_chair: {
+          id: '77777777-7777-7777-7777-777777777777',
+          name: 'Prof. Sofia Chen',
+          institution: 'National University of Singapore'
+        },
+        papers: [
+          {
+            submission_id: 'sub-102',
+            paper_number: 102,
+            title: 'Verifiable Chain-of-Thought Reasoning in Multi-Agent Diagnostic Systems',
+            presenter_name: 'Alex Vance',
+            start_time: '11:30:00',
+            end_time: '11:55:00'
+          }
+        ]
+      },
+      {
+        id: 'fb000001-0000-0000-0000-000000000003',
+        conference_id: confId,
+        title: 'Session 3: Trustworthy AI, Alignment - Agent Sandboxing & Guardrails',
+        track_id: 'c3333333-3333-3333-3333-333333333333',
+        track_name: 'Trustworthy AI, Alignment & Cybersecurity',
+        room: 'Colloquium Room C (AI Research Center)',
+        session_date: '2026-09-15',
+        start_time: '09:30:00',
+        end_time: '11:00:00',
+        status: 'UPCOMING',
+        session_chair: {
+          id: '55555555-5555-5555-5555-555555555555',
+          name: 'Dr. Marcus Holloway',
+          institution: 'University of Oxford'
+        },
+        papers: [
+          {
+            submission_id: 'sub-103',
+            paper_number: 103,
+            title: 'Jailbreak Resistant Guardrails and Sandboxing for Autonomous Agent Tool Execution',
+            presenter_name: 'Tanya Rao',
+            start_time: '09:30:00',
+            end_time: '09:55:00'
+          }
+        ]
+      },
+      {
+        id: 'fb000001-0000-0000-0000-000000000004',
+        conference_id: confId,
+        title: 'Session 4: Edge AI, Robotics - Quadruped SLAM & Physical Autonomous Systems',
+        track_id: 'c4444444-4444-4444-4444-444444444444',
+        track_name: 'Edge AI, Robotics & Physical Autonomous Systems',
+        room: 'Main Auditorium (Hall A)',
+        session_date: '2026-09-15',
+        start_time: '14:00:00',
+        end_time: '15:30:00',
+        status: 'UPCOMING',
+        session_chair: {
+          id: '99999999-9999-9999-9999-999999999993',
+          name: 'Dr. Fatima Al-Mansoor',
+          institution: 'King Abdullah University of Science and Technology'
+        },
+        papers: [
+          {
+            submission_id: 'sub-104',
+            paper_number: 104,
+            title: 'Real-Time Edge Visual SLAM for Autonomous Quadruped Robotic Inspection',
+            presenter_name: 'Rajesh Varma',
+            start_time: '14:00:00',
+            end_time: '14:25:00'
+          },
+          {
+            submission_id: '1967956f-b2df-4cfc-9e9d-5ec7689ba57f',
+            paper_number: 107,
+            title: 'agentic ai',
+            presenter_name: 'renusrisai',
+            start_time: '14:25:00',
+            end_time: '14:50:00'
+          }
+        ]
+      },
+      {
+        id: 'fb000001-0000-0000-0000-000000000005',
+        conference_id: confId,
+        title: 'Session 5: Deep Learning - Speculative Execution & Byzantine Consensus',
+        track_id: 'c2222222-2222-2222-2222-222222222222',
+        track_name: 'Deep Learning & Foundation Reasoning Models',
+        room: 'Seminar Hall B (CSE Block)',
+        session_date: '2026-09-16',
+        start_time: '09:30:00',
+        end_time: '11:00:00',
+        status: 'UPCOMING',
+        session_chair: {
+          id: '99999999-9999-9999-9999-999999999992',
+          name: "Dr. Liam O'Connor",
+          institution: 'Australian National University'
+        },
+        papers: [
+          {
+            submission_id: 'sub-105',
+            paper_number: 105,
+            title: 'Divergent Review Demonstration: Speculative Execution in High-Churn Byzantine Networks',
+            presenter_name: 'Gabriel Silva',
+            start_time: '09:30:00',
+            end_time: '09:55:00'
+          }
+        ]
+      },
+      {
+        id: 'fb000001-0000-0000-0000-000000000006',
+        conference_id: confId,
+        title: 'Session 6: Autonomous Agents - Multi-Agent Consensus & Collaboration Protocols',
+        track_id: 'c1111111-1111-1111-1111-111111111111',
+        track_name: 'Autonomous Agents & Multi-Agent Coordination',
+        room: 'Main Auditorium (Hall A)',
+        session_date: '2026-09-16',
+        start_time: '11:30:00',
+        end_time: '13:00:00',
+        status: 'UPCOMING',
+        session_chair: {
+          id: '99999999-9999-9999-9999-999999999901',
+          name: 'Dr. Aris Thorne',
+          institution: "Vignan's Foundation for Science, Technology & Research"
+        },
+        papers: [
+          {
+            submission_id: 'sub-106',
+            paper_number: 106,
+            title: 'Decentralized Consensus and Multi-Agent Collaboration',
+            presenter_name: 'Dr. Ananya Sharma',
+            start_time: '11:30:00',
+            end_time: '11:55:00'
+          }
+        ]
       }
     ];
 

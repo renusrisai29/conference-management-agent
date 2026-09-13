@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { CertificateRecord } from '../types';
 import { api } from '../services/api';
-import { Award, ShieldCheck, Download, Search, CheckCircle2, Plus, Eye, ExternalLink } from 'lucide-react';
+import { Award, ShieldCheck, Download, Search, CheckCircle2, Plus, Eye, ExternalLink, Sparkles } from 'lucide-react';
 
 interface CertificatesPageProps {
   certificates: CertificateRecord[];
@@ -23,7 +23,23 @@ export const CertificatesPage: React.FC<CertificatesPageProps> = ({
   const [role, setRole] = useState<'AUTHOR' | 'PRESENTER' | 'REVIEWER' | 'SESSION_CHAIR' | 'PARTICIPANT'>('PARTICIPANT');
   const [paperTitle, setPaperTitle] = useState('');
   const [isIssuing, setIsIssuing] = useState(false);
+  const [isBatchIssuing, setIsBatchIssuing] = useState(false);
+  const [batchNotice, setBatchNotice] = useState<string | null>(null);
   const [previewCert, setPreviewCert] = useState<CertificateRecord | null>(null);
+
+  const handleBatchIssue = async () => {
+    setIsBatchIssuing(true);
+    try {
+      const res = await api.batchGenerateCertificates();
+      setBatchNotice(res.message);
+      setTimeout(() => setBatchNotice(null), 5000);
+      onRefresh();
+    } catch (err: any) {
+      alert(`Batch certificate generation failed: ${err.message}`);
+    } finally {
+      setIsBatchIssuing(false);
+    }
+  };
 
   const handleVerify = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -76,13 +92,31 @@ export const CertificatesPage: React.FC<CertificatesPageProps> = ({
           </p>
         </div>
 
-        <button
-          onClick={() => setShowIssueModal(true)}
-          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-4 py-2.5 rounded-xl transition shadow-sm"
-        >
-          <Plus className="w-4 h-4" /> Issue Certificate
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleBatchIssue}
+            disabled={isBatchIssuing}
+            className="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 disabled:opacity-50 text-slate-800 text-xs font-semibold px-3.5 py-2.5 rounded-xl transition border border-slate-200 shadow-2xs"
+            title="Auto-issue certificates for all accepted authors, presenters, reviewers, session chairs, and participants"
+          >
+            <Sparkles className={`w-4 h-4 text-amber-600 ${isBatchIssuing ? 'animate-spin' : ''}`} />
+            {isBatchIssuing ? 'Issuing All Roles...' : 'Auto-Issue All Roles'}
+          </button>
+          <button
+            onClick={() => setShowIssueModal(true)}
+            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-4 py-2.5 rounded-xl transition shadow-sm"
+          >
+            <Plus className="w-4 h-4" /> Issue Certificate
+          </button>
+        </div>
       </div>
+
+      {batchNotice && (
+        <div className="p-4 bg-emerald-50 text-emerald-800 rounded-xl text-xs font-medium border border-emerald-200 flex items-center gap-2">
+          <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+          <span>{batchNotice}</span>
+        </div>
+      )}
 
       {/* Public Verification Search Box */}
       <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl border border-blue-200/80 p-6 shadow-xs">

@@ -1,4 +1,4 @@
-import { db } from '../database/db';
+import { getRepository } from '../database/repositoryFactory';
 import { Submission } from '../types';
 
 export interface SimilarityResult {
@@ -49,8 +49,8 @@ export class SimilarityService {
   /**
    * Check a submission against all other stored submissions
    */
-  public checkSimilarity(target: Submission): SimilarityResult {
-    const targetText = `${target.title} ${target.abstract} ${target.keywords.join(' ')}`;
+  public async checkSimilarity(target: Submission, existingSubmissions?: Submission[]): Promise<SimilarityResult> {
+    const targetText = `${target.title} ${target.abstract} ${(target.keywords || []).join(' ')}`;
     const targetTokens = this.tokenize(targetText);
 
     const matches: {
@@ -62,10 +62,16 @@ export class SimilarityService {
 
     let maxScore = 0;
 
-    for (const sub of db.submissions) {
-      if (sub.id === target.id) continue;
+    let papersToCheck = existingSubmissions;
+    if (!papersToCheck) {
+      const repo = getRepository();
+      papersToCheck = await repo.getSubmissions(target.conference_id);
+    }
 
-      const otherText = `${sub.title} ${sub.abstract} ${sub.keywords.join(' ')}`;
+    for (const sub of papersToCheck) {
+      if (sub.id === target.id || sub.paper_number === target.paper_number) continue;
+
+      const otherText = `${sub.title} ${sub.abstract} ${(sub.keywords || []).join(' ')}`;
       const otherTokens = this.tokenize(otherText);
       const score = Math.round(this.calculateJaccard(targetTokens, otherTokens) * 10) / 10;
 

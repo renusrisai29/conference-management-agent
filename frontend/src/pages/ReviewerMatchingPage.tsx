@@ -56,10 +56,10 @@ export const ReviewerMatchingPage: React.FC<ReviewerMatchingPageProps> = ({
 
   const handleAssign = async (match: ReviewerMatchScore) => {
     if (match.coi_status.has_conflict) {
-      const confirmOverride = window.confirm(
-        `WARNING: This reviewer has active Conflict of Interest flags:\n- ${match.coi_status.reasons.join('\n- ')}\n\nAssigning this reviewer may compromise double-blind peer review integrity. Do you wish to override?`
+      alert(
+        `Assignment Blocked: ${match.reviewer.name} has active Conflict of Interest flags:\n- ${match.coi_status.reasons.join('\n- ')}\n\nConflicted reviewers cannot be assigned.`
       );
-      if (!confirmOverride) return;
+      return;
     }
 
     try {
@@ -266,17 +266,24 @@ export const ReviewerMatchingPage: React.FC<ReviewerMatchingPageProps> = ({
 
                 {/* Right: Assign Button */}
                 <div className="flex items-center lg:flex-col justify-end gap-2">
-                  <button
-                    onClick={() => handleAssign(match)}
-                    className={`px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition shadow-2xs ${
-                      hasConflict
-                        ? 'bg-rose-600 hover:bg-rose-700 text-white'
-                        : 'bg-blue-600 hover:bg-blue-700 text-white'
-                    }`}
-                  >
-                    <UserPlus className="w-3.5 h-3.5" />
-                    {hasConflict ? 'Override & Assign' : 'Assign Reviewer'}
-                  </button>
+                  {hasConflict ? (
+                    <button
+                      disabled
+                      title="Assignment blocked: Conflict of Interest detected"
+                      className="px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed shadow-2xs"
+                    >
+                      <ShieldAlert className="w-3.5 h-3.5 text-rose-500" />
+                      Assignment Blocked (COI)
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => handleAssign(match)}
+                      className="px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition shadow-2xs bg-blue-600 hover:bg-blue-700 text-white"
+                    >
+                      <UserPlus className="w-3.5 h-3.5" />
+                      Assign Reviewer
+                    </button>
+                  )}
                 </div>
               </div>
             </div>

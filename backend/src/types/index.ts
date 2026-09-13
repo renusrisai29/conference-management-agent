@@ -80,6 +80,7 @@ export interface Submission {
   authors: SubmissionAuthor[];
   status: 'DRAFT' | 'SUBMITTED' | 'UNDER_REVIEW' | 'ACCEPTED' | 'REVISION_REQUIRED' | 'REJECTED' | 'CAMERA_READY';
   page_count: number;
+  file_name?: string;
   file_path?: string;
   similarity_score: number;
   similarity_status: 'PENDING' | 'PASSED' | 'FLAGGED';
@@ -147,9 +148,22 @@ export interface ReviewerAssignment {
   reviewer_name: string;
   reviewer_institution: string;
   match_score: number;
-  status: 'ASSIGNED' | 'ACCEPTED' | 'DECLINED' | 'COMPLETED';
+  status: 'ASSIGNED' | 'ACCEPTED' | 'DECLINED' | 'COMPLETED' | 'IN_PROGRESS';
   due_date: string;
   assigned_at: string;
+  assignment_source?: 'AUTOMATIC' | 'MANUAL';
+  match_details?: {
+    assignment_source?: 'AUTOMATIC' | 'MANUAL';
+    trigger_time_ist?: string;
+    matching_outcome?: string;
+    selected_reviewers?: string[];
+    conflict_exclusions?: string[];
+    status_label?: string;
+    draft_review?: any;
+    final_review_id?: string;
+    finalized_at?: string;
+    [key: string]: any;
+  };
 }
 
 export interface Review {
@@ -196,6 +210,15 @@ export interface Decision {
   notification_sent: boolean;
 }
 
+export interface CameraReadySubmission {
+  id: string;
+  submission_id: string;
+  file_url: string;
+  page_count: number;
+  confirmed_metadata: boolean;
+  submitted_at: string;
+}
+
 export interface Registration {
   id: string;
   conference_id: string;
@@ -204,24 +227,26 @@ export interface Registration {
   user_email: string;
   submission_id?: string;
   paper_title?: string;
-  category: 'STUDENT' | 'RESEARCH_SCHOLAR' | 'FACULTY' | 'INDUSTRY' | 'AUTHOR' | 'PARTICIPANT';
+  category: 'STUDENT' | 'RESEARCH_SCHOLAR' | 'FACULTY' | 'INDUSTRY' | 'AUTHOR' | 'PARTICIPANT' | 'LISTENER';
   fee_amount: number;
   currency: string;
   status: 'PENDING' | 'CONFIRMED' | 'CANCELLED';
   payment_status: 'PENDING' | 'SUCCESS' | 'FAILED';
+  is_early_bird?: boolean;
   created_at: string;
 }
 
 export interface PaymentRecord {
   id: string;
-  registration_id: string;
+  registration_id?: string;
   order_id: string;
   payment_id?: string;
   amount: number;
   currency: string;
   payment_mode: 'SANDBOX';
-  status: 'PENDING' | 'SUCCESS' | 'FAILED';
+  status: 'PENDING' | 'SUCCESS' | 'FAILED' | 'UNMATCHED';
   receipt_url?: string;
+  reconciled_by?: string;
   created_at: string;
   verified_at?: string;
 }
@@ -236,6 +261,7 @@ export interface SessionSchedule {
   session_date: string;
   start_time: string;
   end_time: string;
+  status?: 'COMPLETED' | 'ONGOING' | 'UPCOMING' | 'PAST' | string;
   session_chair: {
     id: string;
     name: string;
@@ -317,3 +343,143 @@ export interface AssistantChatMessage {
   }[];
   quick_actions?: string[];
 }
+
+export interface EventArchiveRecord {
+  id: string;
+  conference_id: string;
+  archive_title: string;
+  academic_year: string;
+  archived_at: string;
+  archived_by: string;
+  checksum: string;
+  summary: {
+    total_papers: number;
+    total_reviews: number;
+    total_decisions: number;
+    total_sessions: number;
+    total_registrations: number;
+    total_certificates: number;
+    isbn: string;
+  };
+  event_data: {
+    conference: any;
+    tracks: any[];
+    submissions: any[];
+    reviews: any[];
+    decisions: any[];
+    sessions: any[];
+    registrations: any[];
+    payments: any[];
+    certificates: any[];
+    proceedings: any | null;
+  };
+}
+
+export interface ConferenceFeedback {
+  id: string;
+  conference_id: string;
+  user_name: string;
+  user_email: string;
+  role: 'AUTHOR' | 'PRESENTER' | 'REVIEWER' | 'SESSION_CHAIR' | 'PARTICIPANT';
+  overall_rating: number;
+  session_quality_rating: number;
+  organization_rating: number;
+  venue_platform_rating: number;
+  highlights?: string;
+  suggestions?: string;
+  submitted_at: string;
+}
+
+export interface FeedbackSummary {
+  total_responses: number;
+  average_overall: number;
+  average_session_quality: number;
+  average_organization: number;
+  average_venue_platform: number;
+  satisfaction_percentage: number;
+  rating_distribution: { [rating: number]: number };
+  role_breakdown: { [role: string]: number };
+  recent_feedback: ConferenceFeedback[];
+}
+
+export interface AuditLogRecord {
+  id: string;
+  timestamp: string;
+  action_type:
+    | 'AUTOMATED_REVIEWER_ASSIGNMENT'
+    | 'MANUAL_REVIEWER_ASSIGNMENT'
+    | 'COI_EXCLUSION'
+    | 'REVIEW_REMINDER'
+    | 'OVERDUE_DETECTION'
+    | 'REVIEW_REASSIGNMENT'
+    | 'DECISION_RECOMMENDATION'
+    | 'CFP_STARTUP_SCAN'
+    | 'CFP_GENERATION'
+    | 'CFP_PERSISTENCE'
+    | 'CFP_DISTRIBUTION'
+    | 'CERTIFICATE_GENERATION'
+    | 'PROCEEDINGS_COMPILATION'
+    | 'SCHEDULE_GENERATION'
+    | 'POST_EVENT_REPORT'
+    | 'PAYMENT_REMINDER'
+    | 'OVERDUE_PAYMENT_REMINDER'
+    | 'AUTHOR_REVISION_COMMUNICATION'
+    | 'FINAL_DECISION_COMMUNICATION'
+    | 'ESCALATION';
+  target_id?: string;
+  target_title?: string;
+  actor: 'CONFERENCE_AGENT';
+  status: 'SUCCESS' | 'WARNING' | 'ESCALATED' | 'FAILED';
+  message: string;
+  details?: any;
+}
+
+export interface ReviewerAssignmentSheetItem {
+  assignment_id: string;
+  submission_id: string;
+  paper_number: number;
+  paper_title: string;
+  track_name: string;
+  reviewer_id: string;
+  reviewer_name: string;
+  reviewer_institution: string;
+  match_score: number;
+  coi_status: 'CLEARED' | 'CONFLICT_DETECTED';
+  assignment_status: 'ASSIGNED' | 'ACCEPTED' | 'DECLINED' | 'COMPLETED' | 'IN_PROGRESS';
+  due_date: string;
+  assigned_at: string;
+}
+
+export interface PostEventReport {
+  generated_at: string;
+  conference: {
+    name: string;
+    acronym: string;
+    institution: string;
+    venue: string;
+    dates?: any;
+  };
+  metrics: {
+    total_submissions: number;
+    accepted_papers: number;
+    acceptance_rate: number;
+    active_reviewers: number;
+    reviews_completed: number;
+    total_delegates: number;
+    total_revenue_inr: number;
+    sessions_conducted: number;
+    certificates_issued: number;
+    proceedings_isbn: string;
+  };
+  feedback: {
+    average_rating: number;
+    total_responses: number;
+    satisfaction_percentage: number;
+  };
+  archive: {
+    id?: string;
+    checksum?: string;
+    status: string;
+  };
+}
+

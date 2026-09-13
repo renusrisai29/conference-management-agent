@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
-import { Submission, Decision, Review } from '../types';
+import React, { useState, useEffect } from 'react';
+import { Submission, Decision, Review, Role } from '../types';
 import { api } from '../services/api';
-import { Award, Sparkles, CheckCircle2, AlertTriangle, Send, FileText, Check } from 'lucide-react';
+import { Award, Sparkles, CheckCircle2, AlertTriangle, Send, FileText, Check, Lock, ListOrdered, ChevronRight } from 'lucide-react';
 
 interface DecisionsPageProps {
   submissions: Submission[];
   decisions: Decision[];
   reviews: Review[];
+  currentRole?: Role;
   onRefresh: () => void;
 }
 
@@ -14,6 +15,7 @@ export const DecisionsPage: React.FC<DecisionsPageProps> = ({
   submissions,
   decisions,
   reviews,
+  currentRole = 'CHAIR',
   onRefresh
 }) => {
   const [selectedSubId, setSelectedSubId] = useState(submissions[0]?.id || '');
@@ -23,6 +25,28 @@ export const DecisionsPage: React.FC<DecisionsPageProps> = ({
   const [decisionLetter, setDecisionLetter] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [actionNotice, setActionNotice] = useState<string | null>(null);
+  const [summaryList, setSummaryList] = useState<any[]>([]);
+  const [isLoadingSummary, setIsLoadingSummary] = useState(false);
+
+  const isAuthorizedChair = ['CHAIR', 'ORGANIZER', 'ADMIN'].includes(currentRole);
+
+  const loadSummary = async () => {
+    setIsLoadingSummary(true);
+    try {
+      const data = await api.getRecommendationsSummary();
+      setSummaryList(data);
+    } catch (err) {
+      console.error('Failed to load recommendations summary:', err);
+    } finally {
+      setIsLoadingSummary(false);
+    }
+  };
+
+  useEffect(() => {
+    if (isAuthorizedChair) {
+      loadSummary();
+    }
+  }, [submissions, reviews, decisions, isAuthorizedChair]);
 
   const currentSub = submissions.find(s => s.id === selectedSubId);
   const currentReviews = reviews.filter(r => r.submission_id === selectedSubId);
@@ -67,6 +91,20 @@ export const DecisionsPage: React.FC<DecisionsPageProps> = ({
     }
   };
 
+  if (!isAuthorizedChair) {
+    return (
+      <div className="bg-white rounded-2xl border border-slate-200 p-8 text-center space-y-4 shadow-sm">
+        <div className="w-12 h-12 bg-amber-50 text-amber-600 rounded-full flex items-center justify-center mx-auto">
+          <Lock className="w-6 h-6" />
+        </div>
+        <h3 className="text-base font-bold text-slate-900">Authorized Chair Access Required</h3>
+        <p className="text-xs text-slate-600 max-w-md mx-auto leading-relaxed">
+          Reviewer score breakdowns, confidential comments to the chair, score divergence arbitration, and final editorial decision authority are strictly restricted to authorized Conference Chairs and Administrators.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -107,6 +145,137 @@ export const DecisionsPage: React.FC<DecisionsPageProps> = ({
           <span>{actionNotice}</span>
         </div>
       )}
+
+      {/* Decision Recommendations List Across All Submissions */}
+      <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+        <div className="p-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+              <ListOrdered className="w-4 h-4 text-blue-600" />
+              Editorial Decision Recommendations List
+            </h3>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Automated score aggregation, divergence detection, and AI recommendations (Accept, Revise, Reject) across all submitted manuscripts.
+            </p>
+          </div>
+          <button
+            onClick={loadSummary}
+            disabled={isLoadingSummary}
+            className="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg font-medium transition flex items-center gap-1.5 self-start sm:self-auto"
+          >
+            <Sparkles className={`w-3.5 h-3.5 ${isLoadingSummary ? 'animate-spin' : ''}`} />
+            {isLoadingSummary ? 'Updating List...' : 'Refresh List'}
+          </button>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-xs">
+            <thead className="bg-slate-50 border-b border-slate-100 text-slate-600 font-semibold uppercase tracking-wider text-[10px]">
+              <tr>
+                <th className="py-3 px-4">Paper</th>
+                <th className="py-3 px-4">Track</th>
+                <th className="py-3 px-4">Reviews</th>
+                <th className="py-3 px-4">Avg Score</th>
+                <th className="py-3 px-4">AI Recommended Outcome</th>
+                <th className="py-3 px-4">Divergence</th>
+                <th className="py-3 px-4">Binding Decision</th>
+                <th className="py-3 px-4 text-right">Action</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {summaryList.map((item) => {
+                const isSelected = item.submission_id === selectedSubId;
+                return (
+                  <tr
+                    key={item.submission_id}
+                    className={`hover:bg-slate-50/80 transition ${isSelected ? 'bg-blue-50/40' : ''}`}
+                  >
+                    <td className="py-3.5 px-4 font-semibold text-slate-900">
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono text-blue-700 font-bold">#{item.paper_number}</span>
+                        <span className="line-clamp-1 max-w-xs">{item.title}</span>
+                      </div>
+                    </td>
+                    <td className="py-3.5 px-4 text-slate-600 text-[11px]">{item.track_name}</td>
+                    <td className="py-3.5 px-4 font-mono font-medium text-slate-700">
+                      {item.total_reviews} reviews
+                    </td>
+                    <td className="py-3.5 px-4 font-mono font-bold">
+                      {item.average_score !== null ? (
+                        <span className={item.average_score >= 7.5 ? 'text-emerald-700' : item.average_score >= 5.5 ? 'text-blue-700' : 'text-rose-700'}>
+                          {item.average_score}/10
+                        </span>
+                      ) : (
+                        <span className="text-slate-400 font-normal">Pending</span>
+                      )}
+                    </td>
+                    <td className="py-3.5 px-4">
+                      {item.ai_recommendation === 'ACCEPT' && (
+                        <span className="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                          ACCEPT
+                        </span>
+                      )}
+                      {item.ai_recommendation === 'MINOR_REVISION' && (
+                        <span className="bg-blue-100 text-blue-800 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                          MINOR REVISION
+                        </span>
+                      )}
+                      {item.ai_recommendation === 'MAJOR_REVISION' && (
+                        <span className="bg-amber-100 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                          MAJOR REVISION
+                        </span>
+                      )}
+                      {item.ai_recommendation === 'REJECT' && (
+                        <span className="bg-rose-100 text-rose-800 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                          REJECT
+                        </span>
+                      )}
+                      {item.ai_recommendation === 'PENDING_REVIEWS' && (
+                        <span className="bg-slate-100 text-slate-600 text-[10px] font-medium px-2 py-0.5 rounded-full">
+                          Awaiting Reviews
+                        </span>
+                      )}
+                    </td>
+                    <td className="py-3.5 px-4">
+                      {item.divergence_flag ? (
+                        <span className="inline-flex items-center gap-1 text-amber-700 bg-amber-50 border border-amber-200 text-[10px] font-bold px-2 py-0.5 rounded-md">
+                          <AlertTriangle className="w-3 h-3 text-amber-600" /> Divergent
+                        </span>
+                      ) : (
+                        <span className="text-slate-400 text-[11px]">—</span>
+                      )}
+                    </td>
+                    <td className="py-3.5 px-4">
+                      {item.final_decision ? (
+                        <span className="inline-flex items-center gap-1 text-emerald-700 text-[11px] font-bold">
+                          <Check className="w-3.5 h-3.5" /> {item.final_decision}
+                        </span>
+                      ) : (
+                        <span className="text-amber-600 text-[11px] font-medium">Pending Chair</span>
+                      )}
+                    </td>
+                    <td className="py-3.5 px-4 text-right">
+                      <button
+                        onClick={() => {
+                          setSelectedSubId(item.submission_id);
+                          setAiReport(null);
+                        }}
+                        className={`px-3 py-1 text-[11px] font-semibold rounded-lg transition flex items-center gap-1 ml-auto ${
+                          isSelected
+                            ? 'bg-blue-600 text-white'
+                            : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                        }`}
+                      >
+                        Inspect <ChevronRight className="w-3 h-3" />
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
 
       {/* Target Paper Overview & Reviews Summary */}
       {currentSub && (

@@ -14,6 +14,7 @@ import { CertificatesPage } from './pages/CertificatesPage';
 import { ProceedingsPage } from './pages/ProceedingsPage';
 import { AnalyticsPage } from './pages/AnalyticsPage';
 import { IntegrationsPage } from './pages/IntegrationsPage';
+import { ReviewerWorkspacePage } from './pages/ReviewerWorkspacePage';
 import { api } from './services/api';
 import {
   Conference, Submission, ReviewerAssignment, Review,
@@ -22,8 +23,18 @@ import {
 } from './types';
 import {
   LayoutDashboard, FileText, FileUp, Users, ClipboardList,
-  Award, CreditCard, CalendarDays, BookMarked, BarChart3, Activity
+  Award, CreditCard, CalendarDays, BookMarked, BarChart3, Activity, UserCheck
 } from 'lucide-react';
+
+const ROLE_EMAILS: Record<Role, string> = {
+  CHAIR: 'chair@vignan.ac.in',
+  ORGANIZER: 'organizer@vignan.ac.in',
+  REVIEWER: 'reviewer1@oxford.ac.uk',
+  AUTHOR: 'author1@mit.edu',
+  PARTICIPANT: 'participant@iitb.ac.in',
+  SESSION_CHAIR: 'sessionchair@vignan.ac.in',
+  ADMIN: 'admin@vignan.ac.in'
+};
 
 export const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>('ASSISTANT');
@@ -78,12 +89,20 @@ export const App: React.FC = () => {
     loadAllData();
   }, []);
 
+  const handleRoleChange = (role: Role) => {
+    setCurrentRole(role);
+    if (role === 'REVIEWER') {
+      setActiveTab('REVIEWER_WORKSPACE');
+    }
+  };
+
   const handleTriggerAction = (actionKey: string) => {
     const key = actionKey.toLowerCase();
     if (key.includes('status')) setActiveTab('OVERVIEW');
     else if (key.includes('cfp')) setActiveTab('CFP');
     else if (key.includes('submission')) setActiveTab('SUBMISSIONS');
     else if (key.includes('find reviewer') || key.includes('coi') || key.includes('match')) setActiveTab('REVIEWER_MATCHING');
+    else if (key.includes('reviewer portal') || key.includes('reviewer workspace')) setActiveTab('REVIEWER_WORKSPACE');
     else if (key.includes('review')) setActiveTab('REVIEWS');
     else if (key.includes('decision')) setActiveTab('DECISIONS');
     else if (key.includes('programme') || key.includes('schedule')) setActiveTab('PROGRAMME');
@@ -99,6 +118,7 @@ export const App: React.FC = () => {
     { id: 'CFP', label: 'Call for Papers', icon: FileText },
     { id: 'SUBMISSIONS', label: 'Submissions', icon: FileUp, count: submissions.length },
     { id: 'REVIEWER_MATCHING', label: 'Reviewer Matching', icon: Users, badge: 'Agent 17' },
+    { id: 'REVIEWER_WORKSPACE', label: 'Reviewer Portal', icon: UserCheck, badge: 'Portal' },
     { id: 'REVIEWS', label: 'Reviews', icon: ClipboardList, count: reviews.length },
     { id: 'DECISIONS', label: 'AI Decisions', icon: Award, count: decisions.length },
     { id: 'REGISTRATION', label: 'Registration & Pay', icon: CreditCard, badge: 'Sandbox' },
@@ -113,7 +133,7 @@ export const App: React.FC = () => {
       {/* 1. Header with exact Vignan branding and hackathon title */}
       <Header
         currentRole={currentRole}
-        onRoleChange={setCurrentRole}
+        onRoleChange={handleRoleChange}
         onOpenIntegrations={() => setShowIntegrationsModal(true)}
       />
 
@@ -215,7 +235,11 @@ export const App: React.FC = () => {
 
         {/* 3. Conference Overview Page */}
         {activeTab === 'OVERVIEW' && (
-          <OverviewPage conference={conference} onRefresh={loadAllData} />
+          <OverviewPage
+            conference={conference}
+            currentRole={currentRole}
+            onRefresh={loadAllData}
+          />
         )}
 
         {/* 4. Call for Papers Page */}
@@ -228,6 +252,8 @@ export const App: React.FC = () => {
           <SubmissionsPage
             submissions={submissions}
             tracks={conference?.tracks || []}
+            currentRole={currentRole}
+            currentUserEmail={ROLE_EMAILS[currentRole] || 'participant@iitb.ac.in'}
             onRefresh={loadAllData}
             onSelectPaperForMatching={(sub) => {
               setSelectedPaperForMatching(sub.paper_number);
@@ -245,12 +271,23 @@ export const App: React.FC = () => {
           />
         )}
 
+        {/* 6B. Reviewer Workspace & Reviewer Portal */}
+        {activeTab === 'REVIEWER_WORKSPACE' && (
+          <ReviewerWorkspacePage
+            currentRole={currentRole}
+            currentUserEmail={ROLE_EMAILS[currentRole] || 'reviewer1@oxford.ac.uk'}
+            onRefresh={loadAllData}
+            onRoleChange={handleRoleChange}
+          />
+        )}
+
         {/* 7. Reviews Management Page */}
         {activeTab === 'REVIEWS' && (
           <ReviewsManagementPage
             submissions={submissions}
             assignments={assignments}
             reviews={reviews}
+            currentRole={currentRole}
             onRefresh={loadAllData}
           />
         )}
@@ -261,6 +298,7 @@ export const App: React.FC = () => {
             submissions={submissions}
             decisions={decisions}
             reviews={reviews}
+            currentRole={currentRole}
             onRefresh={loadAllData}
           />
         )}
@@ -269,6 +307,7 @@ export const App: React.FC = () => {
         {activeTab === 'REGISTRATION' && (
           <RegistrationPaymentPage
             registrations={registrations}
+            currentRole={currentRole}
             onRefresh={loadAllData}
           />
         )}

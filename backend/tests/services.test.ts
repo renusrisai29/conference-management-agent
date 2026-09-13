@@ -33,9 +33,9 @@ describe('Conference Management Agent (Agent 26) - Service Suite', () => {
     expect(coiResult.reasons.length).toBeGreaterThan(0);
   });
 
-  test('Similarity Service runs genuine n-gram comparison and flags duplicate text', () => {
+  test('Similarity Service runs genuine n-gram comparison and flags duplicate text', async () => {
     const paper102 = db.submissions.find(s => s.paper_number === 102)!;
-    const simResult = similarityService.checkSimilarity(paper102);
+    const simResult = await similarityService.checkSimilarity(paper102);
 
     expect(typeof simResult.similarity_score).toBe('number');
     expect(['PASSED', 'FLAGGED']).toContain(simResult.status);
@@ -50,15 +50,15 @@ describe('Conference Management Agent (Agent 26) - Service Suite', () => {
     expect(matches[0].expertise_score).toBeDefined();
   });
 
-  test('Scheduler Service produces conflict-free sessions', () => {
-    const sessions = schedulerService.generateProgramme({ conferenceId: 'conf-01' });
+  test('Scheduler Service produces conflict-free sessions', async () => {
+    const sessions = await schedulerService.generateProgramme({ conferenceId: 'conf-01' });
     expect(sessions.length).toBeGreaterThan(0);
     expect(sessions[0].room).toBeDefined();
     expect(sessions[0].session_chair).toBeDefined();
   });
 
-  test('Certificate Service issues verifiable certificates with SHA-256 hash', () => {
-    const cert = certificateService.generateCertificate({
+  test('Certificate Service issues verifiable certificates with SHA-256 hash', async () => {
+    const cert = await certificateService.generateCertificate({
       recipientName: 'Dr. Test Scholar',
       recipientEmail: 'scholar@mit.edu',
       role: 'PRESENTER',
@@ -68,13 +68,13 @@ describe('Conference Management Agent (Agent 26) - Service Suite', () => {
     expect(cert.certificate_number).toMatch(/^VIGNAN-CONF2026-CERT-[A-F0-9]{6}$/);
     expect(cert.verification_hash.length).toBe(64); // SHA-256 hex length
 
-    const verify = certificateService.verifyCertificate(cert.certificate_number);
+    const verify = await certificateService.verifyCertificate(cert.certificate_number);
     expect(verify.valid).toBe(true);
     expect(verify.certificate?.recipient_name).toBe('Dr. Test Scholar');
   });
 
-  test('Proceedings Service compiles table of contents and maintains ISBN pending policy', () => {
-    const proc = proceedingsService.compileProceedings('conf-01');
+  test('Proceedings Service compiles table of contents and maintains ISBN pending policy', async () => {
+    const proc = await proceedingsService.compileProceedings('conf-01');
     expect(proc.title).toContain('Proceedings');
     expect(proc.isbn).toBe('ISBN pending');
     expect(proc.table_of_contents).toBeDefined();

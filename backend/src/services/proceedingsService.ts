@@ -1,21 +1,25 @@
-import { db } from '../database/db';
+import { getRepository } from '../database/repositoryFactory';
 import { ProceedingsRecord } from '../types';
 
 export class ProceedingsService {
   /**
    * Compile the official conference proceedings from accepted papers
    */
-  public compileProceedings(conferenceId: string, customIsbn?: string): ProceedingsRecord {
-    const conf = db.conferences.find(c => c.id === conferenceId) || db.conferences[0];
-    const acceptedPapers = db.submissions.filter(s => s.status === 'ACCEPTED' || s.status === 'CAMERA_READY');
+  public async compileProceedings(conferenceId?: string, customIsbn?: string): Promise<ProceedingsRecord> {
+    const repo = getRepository();
+    const conf = await repo.getConferenceById(conferenceId);
+    const confId = conf ? conf.id : (conferenceId || 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa');
+    const allPapers = await repo.getSubmissions(confId);
+    const acceptedPapers = allPapers.filter(s => s.status === 'ACCEPTED' || s.status === 'CAMERA_READY');
+    const tracks = await repo.getTracks(confId);
 
     // Group papers by track for table of contents
     const tocByTrack: { [trackName: string]: any[] } = {};
     let currentPage = 1;
 
     for (const paper of acceptedPapers) {
-      const track = db.tracks.find(t => t.id === paper.track_id);
-      const trackName = track ? track.name : 'General Research Track';
+      const track = tracks.find(t => t.id === paper.track_id);
+      const trackName = track ? track.name : (paper.track_name || 'General Research Track');
 
       if (!tocByTrack[trackName]) tocByTrack[trackName] = [];
 
@@ -26,7 +30,7 @@ export class ProceedingsService {
       tocByTrack[trackName].push({
         paper_number: paper.paper_number,
         title: paper.title,
-        authors: paper.authors.map(a => `${a.name} (${a.institution})`).join(', '),
+        authors: paper.authors ? paper.authors.map(a => `${a.name} (${a.institution})`).join(', ') : '',
         page_range: `pp. ${startPage}-${endPage}`
       });
     }
@@ -41,7 +45,7 @@ export class ProceedingsService {
 
     const proceedingsRecord: ProceedingsRecord = {
       id: `proc-${Date.now().toString().slice(-6)}`,
-      conference_id: conf ? conf.id : conferenceId,
+      conference_id: confId,
       title: `Proceedings of the ${conf?.name || 'International Conference on Agentic AI & Autonomous Systems'}`,
       theme: conf?.theme || 'Architectures, Collaboration, and Governance of Autonomous AI Agents',
       isbn: finalIsbn,
@@ -51,15 +55,7 @@ export class ProceedingsService {
       compiled_at: new Date().toISOString()
     };
 
-    // Replace or insert
-    const existingIdx = db.proceedings.findIndex(p => p.conference_id === proceedingsRecord.conference_id);
-    if (existingIdx >= 0) {
-      db.proceedings[existingIdx] = proceedingsRecord;
-    } else {
-      db.proceedings.push(proceedingsRecord);
-    }
-
-    return proceedingsRecord;
+    return await repo.saveProceedings(proceedingsRecord);
   }
 }
 

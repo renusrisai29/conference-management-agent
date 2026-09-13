@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { ProceedingsRecord } from '../types';
+import React, { useState, useEffect } from 'react';
+import { ProceedingsRecord, EventArchiveRecord } from '../types';
 import { api } from '../services/api';
-import { BookMarked, Sparkles, CheckCircle2, AlertCircle, Save, FileText } from 'lucide-react';
+import { BookMarked, Sparkles, CheckCircle2, AlertCircle, Save, FileText, Archive, Download, ShieldCheck, Database, Layers } from 'lucide-react';
 
 interface ProceedingsPageProps {
   proceedings: ProceedingsRecord | null;
@@ -15,6 +15,30 @@ export const ProceedingsPage: React.FC<ProceedingsPageProps> = ({
   const [isbnInput, setIsbnInput] = useState(proceedings?.isbn || 'ISBN pending');
   const [isCompiling, setIsCompiling] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
+
+  // Event Archive state
+  const [archives, setArchives] = useState<EventArchiveRecord[]>([]);
+  const [isArchiving, setIsArchiving] = useState(false);
+  const [archiveNotice, setArchiveNotice] = useState<string | null>(null);
+
+  useEffect(() => {
+    api.getEventArchives().then(setArchives).catch(console.error);
+  }, []);
+
+  const handleCreateArchive = async () => {
+    setIsArchiving(true);
+    try {
+      const res = await api.createEventArchive({ archived_by: 'Dr. Radhika Sharma (General Chair)' });
+      setArchiveNotice(`Event archive #${res.archive.id} created with SHA-256 integrity checksum: ${res.archive.checksum.slice(0, 12)}...`);
+      setTimeout(() => setArchiveNotice(null), 6000);
+      const updated = await api.getEventArchives();
+      setArchives(updated);
+    } catch (err: any) {
+      alert(`Archive creation failed: ${err.message}`);
+    } finally {
+      setIsArchiving(false);
+    }
+  };
 
   const handleCompile = async () => {
     setIsCompiling(true);
@@ -151,6 +175,83 @@ export const ProceedingsPage: React.FC<ProceedingsPageProps> = ({
           Loading proceedings metadata...
         </div>
       )}
+      {/* Full Event Archive & Academic Record Preservation Card */}
+      <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+          <div>
+            <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+              <Archive className="w-4 h-4 text-indigo-600" />
+              Event Archive & Academic Preservation Record
+            </h3>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Generates an immutable snapshot of all conference configuration, tracks, papers, peer reviews, decisions, timetable, registrations, payments, and certificates.
+            </p>
+          </div>
+
+          <button
+            onClick={handleCreateArchive}
+            disabled={isArchiving}
+            className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-xs font-semibold px-4 py-2 rounded-xl transition shadow-sm whitespace-nowrap"
+          >
+            <Database className={`w-3.5 h-3.5 ${isArchiving ? 'animate-spin' : ''}`} />
+            {isArchiving ? 'Archiving Event...' : 'Create Archive Snapshot'}
+          </button>
+        </div>
+
+        {archiveNotice && (
+          <div className="p-3.5 bg-emerald-50 text-emerald-800 rounded-xl text-xs font-medium border border-emerald-200 flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+            <span className="truncate">{archiveNotice}</span>
+          </div>
+        )}
+
+        {/* List of Archived Snapshots */}
+        {archives.length > 0 ? (
+          <div className="space-y-3">
+            {archives.map((arch) => (
+              <div
+                key={arch.id}
+                className="p-4 bg-slate-50/70 border border-slate-200 rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-4"
+              >
+                <div className="space-y-1 text-xs">
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-slate-900 font-mono">{arch.id}</span>
+                    <span className="font-semibold text-slate-800">{arch.archive_title}</span>
+                    <span className="bg-indigo-100 text-indigo-800 text-[10px] font-bold px-2 py-0.5 rounded font-mono">
+                      AY {arch.academic_year}
+                    </span>
+                  </div>
+                  <div className="text-[11px] text-slate-500 flex flex-wrap items-center gap-3">
+                    <span>Archived: <strong>{new Date(arch.archived_at).toLocaleString()}</strong></span>
+                    <span>By: <strong>{arch.archived_by}</strong></span>
+                    <span className="font-mono text-slate-400">SHA-256: {arch.checksum.slice(0, 16)}...</span>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2 pt-1 text-[10px] font-mono text-slate-600">
+                    <span className="bg-white px-2 py-0.5 rounded border border-slate-200">Papers: {arch.summary.total_papers}</span>
+                    <span className="bg-white px-2 py-0.5 rounded border border-slate-200">Reviews: {arch.summary.total_reviews}</span>
+                    <span className="bg-white px-2 py-0.5 rounded border border-slate-200">Sessions: {arch.summary.total_sessions}</span>
+                    <span className="bg-white px-2 py-0.5 rounded border border-slate-200">Registrations: {arch.summary.total_registrations}</span>
+                    <span className="bg-white px-2 py-0.5 rounded border border-slate-200">Certificates: {arch.summary.total_certificates}</span>
+                    <span className="bg-white px-2 py-0.5 rounded border border-slate-200">ISBN: {arch.summary.isbn}</span>
+                  </div>
+                </div>
+
+                <a
+                  href={`/api/archive/${arch.id}/download`}
+                  download
+                  className="flex items-center gap-1.5 bg-white hover:bg-slate-100 text-slate-700 text-xs font-semibold px-3.5 py-2 rounded-xl transition border border-slate-200 shadow-2xs whitespace-nowrap shrink-0"
+                >
+                  <Download className="w-3.5 h-3.5 text-blue-600" /> Download JSON Archive
+                </a>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-6 text-slate-400 text-xs bg-slate-50/50 rounded-xl border border-dashed border-slate-200">
+            No event archive snapshots created yet. Click "Create Archive Snapshot" to freeze and preserve the full event record.
+          </div>
+        )}
+      </div>
     </div>
   );
 };
