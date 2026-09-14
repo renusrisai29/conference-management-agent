@@ -1,6 +1,7 @@
 import { agentTools } from '../tools/agentTools';
 import { groqService } from '../integrations/groq/groqService';
 import { AssistantChatMessage } from '../types';
+import { getRepository } from '../database/repositoryFactory';
 
 export class BoltAgent {
   public async handleMessage(userMessage: string, history: AssistantChatMessage[] = []): Promise<AssistantChatMessage> {
@@ -45,20 +46,137 @@ export class BoltAgent {
       });
       assistantResponse = `I have generated the official Call for Papers (CFP) for **AGENTIC-AI-2026** using the ${result.generated_with}.\n\nIt includes all four tracks, author page limits, and critical conference dates. You can preview, edit, or broadcast it from the CFP tab.`;
     }
-    else if (text.includes('find reviewer') || text.includes('match reviewer') || (text.includes('reviewer') && text.includes('paper'))) {
-      const paperMatch = text.match(/10[1-6]/) || text.match(/\d+/);
-      const paperNum = paperMatch ? parseInt(paperMatch[0], 10) : 102;
+    else if (
+      text.includes('find reviewer') ||
+      text.includes('match reviewer') ||
+      text.includes('assign reviewer') ||
+      (text.includes('reviewer') && (text.includes('paper') || text.includes('submission')))
+    ) {
+      const isRemaining = text.includes('remaining');
+      const quantityMatch = text.match(/(\d+)\s+(?:of\s+the\s+)?(?:remaining\s+)?(?:papers|submissions)/i) ||
+                            text.match(/(?:those|these|all|the)\s+(\d+)\s+(?:remaining\s+)?(?:papers|submissions)/i) ||
+                            text.match(/remaining\s+(\d+)\s+(?:papers|submissions)/i);
+      const requestedQuantity = quantityMatch ? parseInt(quantityMatch[1], 10) : undefined;
 
-      const tool = agentTools.reviewerMatchingTool;
-      const result = await tool.execute({ paper_number: paperNum });
-      toolInvocations.push({
-        tool_name: 'reviewerMatchingTool',
-        parameters: { paper_number: paperNum },
-        result,
-        status: 'completed'
-      });
+      const isBatch = isRemaining ||
+                      !!quantityMatch ||
+                      /\b(?:those|these|all)\s+(?:papers|submissions)\b/i.test(text) ||
+                      /\ball\s+(?:the\s+)?(?:papers|submissions)\b/i.test(text);
 
-      assistantResponse = `I queried the **Agent 17 Mock Provider** (Faculty Research Publication Monitoring Agent) and evaluated ${result.total_reviewers_evaluated} verified faculty profiles for **Paper #${paperNum}: "${result.title}"**.\n\nHere are the top ranked candidates based on our 5-factor weighted algorithm (50% expertise, 20% keywords, 15% research area, 10% workload, 5% suitability), with COI detection applied.`;
+      if (isBatch) {
+        // 1. Get actual currently submitted paper numbers from submission-listing tool
+        const subTool = agentTools.submissionTool;
+        const subsResult = await subTool.execute({});
+        toolInvocations.push({
+          tool_name: 'submissionTool',
+          parameters: {},
+          result: subsResult,
+          status: 'completed'
+        });
+
+        const submittedPaperNumbers: number[] = Array.isArray(subsResult)
+          ? subsResult.map((s: any) => s.paper_number).filter((n: any) => typeof n === 'number')
+          : [];
+        submittedPaperNumbers.sort((a, b) => a - b);
+
+        let targetPaperNumbers = [...submittedPaperNumbers];
+
+        // 2. For "remaining papers", exclude only papers already successfully assigned
+        if (isRemaining) {
+          const repo = getRepository();
+          const allAssignments = await repo.getReviewerAssignments();
+          const allSubmissions = await repo.getSubmissions();
+
+          const assignedPaperNumbers = new Set<number>();
+          for (const a of allAssignments) {
+            if (a.status !== 'DECLINED') {
+              const sub = allSubmissions.find(
+                s => s.id === a.submission_id || String(s.paper_number) === a.submission_id || `sub-${s.paper_number}` === a.submission_id
+              );
+              if (sub) {
+                assignedPaperNumbers.add(sub.paper_number);
+              } else {
+                const numMatch = a.submission_id.match(/\d+/);
+                if (numMatch) {
+                  assignedPaperNumbers.add(parseInt(numMatch[0], 10));
+                }
+              }
+            }
+          }
+
+          targetPaperNumbers = targetPaperNumbers.filter(num => !assignedPaperNumbers.has(num));
+        }
+
+        // Apply quantity limit if specified (e.g. 6 papers or 5 papers)
+        if (requestedQuantity && requestedQuantity > 0) {
+          targetPaperNumbers = targetPaperNumbers.slice(0, requestedQuantity);
+        }
+
+        if (targetPaperNumbers.length === 0) {
+          if (isRemaining) {
+            assistantResponse = `All submitted papers have already been successfully assigned reviewers. There are no remaining unassigned papers.`;
+          } else {
+            assistantResponse = `Paper not found: No submitted papers found to assign reviewers.`;
+          }
+        } else {
+          // 3. Pass real paper numbers to reviewerMatchingTool
+          const matchResults: { paperNum: number; result: any }[] = [];
+          for (const paperNum of targetPaperNumbers) {
+            const tool = agentTools.reviewerMatchingTool;
+            const result = await tool.execute({ paper_number: paperNum });
+            toolInvocations.push({
+              tool_name: 'reviewerMatchingTool',
+              parameters: { paper_number: paperNum },
+              result,
+              status: result.error ? 'failed' : 'completed'
+            });
+            matchResults.push({ paperNum, result });
+          }
+
+          if (matchResults.length === 1) {
+            const { paperNum, result } = matchResults[0];
+            if (result.error) {
+              assistantResponse = `Paper not found: ${result.error}`;
+            } else {
+              assistantResponse = `I queried the **Agent 17 Mock Provider** (Faculty Research Publication Monitoring Agent) and evaluated ${result.total_reviewers_evaluated} verified faculty profiles for **Paper #${paperNum}: "${result.title}"**.\n\nHere are the top ranked candidates based on our 5-factor weighted algorithm (50% expertise, 20% keywords, 15% research area, 10% workload, 5% suitability), with COI detection applied.`;
+            }
+          } else {
+            const validMatches = matchResults.filter(m => !m.result.error);
+            if (validMatches.length === 0) {
+              assistantResponse = `Paper not found: None of the requested papers could be found.`;
+            } else {
+              const paperSummaries = validMatches
+                .map(m => `**Paper #${m.paperNum}: "${m.result.title}"** (${m.result.total_reviewers_evaluated} verified faculty profiles evaluated)`)
+                .join('\n- ');
+
+              assistantResponse = `I queried the **Agent 17 Mock Provider** (Faculty Research Publication Monitoring Agent) and evaluated candidate reviewer matches for **${validMatches.length} papers** (${validMatches.map(m => `Paper #${m.paperNum}`).join(', ')}):\n\n- ${paperSummaries}\n\nTop ranked candidates have been identified based on our 5-factor weighted algorithm (50% expertise, 20% keywords, 15% research area, 10% workload, 5% suitability), with COI detection applied.`;
+            }
+          }
+        }
+      } else {
+        // Single paper request
+        const paperMatch = text.match(/(?:paper|submission)\s*(?:#|no\.?|number)?\s*(\d+)/i) ||
+                           text.match(/#\s*(\d+)/) ||
+                           text.match(/\b(10[1-9]|\d{3,})\b/) ||
+                           text.match(/\d+/);
+        const paperNum = paperMatch ? parseInt(paperMatch[1] || paperMatch[0], 10) : 102;
+
+        const tool = agentTools.reviewerMatchingTool;
+        const result = await tool.execute({ paper_number: paperNum });
+        toolInvocations.push({
+          tool_name: 'reviewerMatchingTool',
+          parameters: { paper_number: paperNum },
+          result,
+          status: result.error ? 'failed' : 'completed'
+        });
+
+        // 5. Add a small validation so a nonexistent paper does not show undefined; show "Paper not found" instead
+        if (result.error) {
+          assistantResponse = `Paper not found: ${result.error}`;
+        } else {
+          assistantResponse = `I queried the **Agent 17 Mock Provider** (Faculty Research Publication Monitoring Agent) and evaluated ${result.total_reviewers_evaluated} verified faculty profiles for **Paper #${paperNum}: "${result.title}"**.\n\nHere are the top ranked candidates based on our 5-factor weighted algorithm (50% expertise, 20% keywords, 15% research area, 10% workload, 5% suitability), with COI detection applied.`;
+        }
+      }
     }
     else if (text.includes('coi') || text.includes('conflict of interest') || text.includes('conflicts')) {
       const paperMatch = text.match(/10[1-6]/) || text.match(/\d+/);

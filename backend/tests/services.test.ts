@@ -7,6 +7,7 @@ import { proceedingsService } from '../src/services/proceedingsService';
 import { getAgent17Provider } from '../src/integrations/agent17';
 import { boltAgent } from '../src/agents/boltAgent';
 import { db } from '../src/database/db';
+import { getRepository } from '../src/database/repositoryFactory';
 
 describe('Conference Management Agent (Agent 26) - Service Suite', () => {
   test('Agent 17 Mock Provider has >= 15 faculty researchers and >= 100 publications', async () => {
@@ -87,4 +88,57 @@ describe('Conference Management Agent (Agent 26) - Service Suite', () => {
     expect(res.tool_invocations?.length).toBeGreaterThan(0);
     expect(res.tool_invocations?.[0].tool_name).toBe('conferenceConfigurationTool');
   });
+
+  test('“Assign reviewers for those 6 papers” uses 101–106, never Paper #6', async () => {
+    const res = await boltAgent.handleMessage('Assign reviewers for those 6 papers');
+    const matchingCalls = res.tool_invocations?.filter(t => t.tool_name === 'reviewerMatchingTool') || [];
+    const paperNums = matchingCalls.map(t => t.parameters.paper_number);
+
+    expect(paperNums).toEqual([101, 102, 103, 104, 105, 106]);
+    expect(paperNums).not.toContain(6);
+    expect(res.content).not.toContain('undefined');
+  });
+
+  test('“Assign reviewers for the remaining 5 papers” uses the five unassigned real paper numbers, never Paper #5', async () => {
+    const repo = getRepository();
+    const allSubs = await repo.getSubmissions();
+    const paper101 = allSubs.find(s => s.paper_number === 101);
+
+    // Mock assignments where Paper 101 is already successfully assigned, leaving 102-106 unassigned
+    const mockAssignments: any[] = [
+      {
+        id: 'asgn-test-101',
+        submission_id: paper101 ? paper101.id : 'sub-101',
+        reviewer_id: 'FAC-A17-001',
+        status: 'ASSIGNED'
+      }
+    ];
+
+    const spy = jest.spyOn(repo, 'getReviewerAssignments').mockResolvedValue(mockAssignments);
+    try {
+      const res = await boltAgent.handleMessage('Assign reviewers for the remaining 5 papers');
+      const matchingCalls = res.tool_invocations?.filter(t => t.tool_name === 'reviewerMatchingTool') || [];
+      const paperNums = matchingCalls.map(t => t.parameters.paper_number);
+
+      expect(paperNums).toEqual([102, 103, 104, 105, 106]);
+      expect(paperNums).not.toContain(5);
+      expect(res.content).not.toContain('undefined');
+    } finally {
+      spy.mockRestore();
+    }
+  });
+
+  test('A missing paper shows a clear error without undefined fields', async () => {
+    const res6 = await boltAgent.handleMessage('Assign reviewers for paper 6');
+    expect(res6.content).toContain('Paper not found');
+    expect(res6.content).not.toContain('undefined');
+    const matchingCall6 = res6.tool_invocations?.find(t => t.tool_name === 'reviewerMatchingTool');
+    expect(matchingCall6?.parameters.paper_number).toBe(6);
+    expect(matchingCall6?.result.error).toContain('not found');
+
+    const res999 = await boltAgent.handleMessage('Find reviewer for paper 999');
+    expect(res999.content).toContain('Paper not found');
+    expect(res999.content).not.toContain('undefined');
+  });
 });
+
